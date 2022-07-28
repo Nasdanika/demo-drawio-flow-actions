@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="EN">
+  <head>
+    <title>Activity 4</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.5.2/cerulean/bootstrap.min.css" id="nsd-bootstrap-theme-stylesheet">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.min.js"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Nasdanika/html@master/model/app.gen/web-resources/css/app.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jstree@3.3.11/dist/themes/default/style.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.3.1/build/styles/default.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-vue@2.21.2/dist/bootstrap-vue.css">
+    <script src="https://cdn.jsdelivr.net/gh/Nasdanika/html@master/model/app.gen/web-resources/js/common.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/Nasdanika/html@master/model/app.gen/web-resources/js/dark-head.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jstree@3.3.11/dist/jstree.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.3.1/build/highlight.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-vue@2.21.2/dist/bootstrap-vue.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/Nasdanika/html@master/model/app.gen/web-resources/js/components/table.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script><!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-9BRJVLK8CC"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-9BRJVLK8CC');
+</script>    
+
+<script src="../../../../../../search-documents.js"></script>
+
+<script src="https://unpkg.com/lunr/lunr.js"></script>
+
+<script>
+// Script for full-text search of JsTree
+
+window.nsdJsTreeSearchCallback = function(str, node) { 
+    var sf = new $.vakata.search(str, true, { caseSensitive : false, fuzzy : false }); 
+    if (sf.search(node.text).isMatch) {
+		return true;
+	} 
+    let searchResult = this.search(str); 
+    for (const sr in searchResult) {
+        if (searchResult[sr].ref === node.original['data-nsd-action-uuid']) {
+            return true;
+        } 
+    } 
+    return false; 
+}.bind(lunr(function () {
+			  this.ref('id');
+			  this.field('title');
+			  this.field('content');
+
+			  for (const key in searchDocuments) {
+				  let doc = searchDocuments[key];
+				this.add({
+					id: doc['action-uuid'],
+					title: doc.title,
+					path: doc.path,
+					content: doc.content
+				});  
+			  }
+			}));
+</script>
+</head>
+  <body>
+    <div class="container-fluid nsd-app-container">
+      <div class="row">
+        <div class="col nsd-app-header">
+          <a href="https://www.nasdanika.org" title="Root action" data-nsd-action-uuid="05508331-42f7-40aa-bee3-b558cfbd2d1a" class="nsd-app-header-title">
+            <img src="https://docs.nasdanika.org/images/nasdanika-logo.png" class="nsd-app-label-icon">Nasdanika</a>
+          <ul class="nav nsd-app-header-navs">
+            <li class="nav-item">
+              <a href="../../../../../../search.html" data-nsd-action-uuid="132ee44b-f05d-4546-9708-0c74a0416ede" class="nav-link"><span class="fas fa-search nsd-app-label-icon"></span>Search</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col nsd-app-navbar">
+          <ul class="navbar navbar-light navbar-expand-lg">
+            <a href="../../../../../../index.html" data-nsd-action-uuid="b2433d74-07af-4770-8566-fd95fa2b5061" class="navbar-brand">Page-1</a>
+            <button type="button" data-toggle="collapse" data-target="#nsd_pi" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler"><span class="navbar-toggler-icon"></span>
+            </button>
+            <div id="nsd_pi" class="collapse navbar-collapse"></div>
+          </ul>
+        </div>
+      </div>
+      <div class="row nsd-app-content-row">
+        <div class="col nsd-app-navigation-panel">
+          <input type="text" id="0-navigation-panel_searchInput" title="Full-text search. You can use wildcards, e.g. 'foo*' or 'f*o'; title or content fields, e.g. 'title:foo* bar'; boosts, e.g. 'foo^10 bar'; fuzzy matches, e.g. 'foo~1'; and term presence, e.g. '+foo bar -baz'" class="form-control mt-1">
+          <div id="0-navigation-panel"></div>
+          <script>$(document).ready( function() {
+$('#0-navigation-panel').jstree(function(tree) { tree.state.filter = function(state) { delete state.core.selected; return state; };  tree.search.search_callback = function(searchStr, node) { if (typeof window.nsdJsTreeSearchCallback === 'function') return window.nsdJsTreeSearchCallback(searchStr, node); var sf = new $.vakata.search(searchStr, true, { caseSensitive : false, fuzzy : false }); return sf.search(node.text).isMatch; }; return tree; }({"core":{"data":[{"a_attr":{"onclick":"window.location='../../../../index.html';"},"children":[{"a_attr":{"onclick":"window.location='../../../2b4e8129b02d487f-2/index.html';"},"children":[{"a_attr":{"onclick":"window.location='../../../2b4e8129b02d487f-2/children/2b4e8129b02d487f-6/index.html';"},"id":"nsd-app-nav-item-2b4e8129b02d487f-6","text":"Activity 1","data-nsd-action-uuid":"98247d36-aac1-42b0-be48-736096d43956","type":"leaf"},{"a_attr":{"onclick":"window.location='../../../2b4e8129b02d487f-2/children/2b4e8129b02d487f-7/index.html';"},"id":"nsd-app-nav-item-2b4e8129b02d487f-7","text":"Activity 3","data-nsd-action-uuid":"f517dfbf-9f85-4a14-b6e4-87b1a9adef7e","type":"leaf"},{"a_attr":{"onclick":"window.location='../../../2b4e8129b02d487f-2/children/2b4e8129b02d487f-9/index.html';"},"id":"nsd-app-nav-item-2b4e8129b02d487f-9","text":"Activity 6","data-nsd-action-uuid":"36ca89a9-c2a1-402a-a4fb-28e628dbfdbc","type":"leaf"},{"a_attr":{"onclick":"window.location='../../../2b4e8129b02d487f-2/children/2b4e8129b02d487f-11/index.html';"},"id":"nsd-app-nav-item-2b4e8129b02d487f-11","text":"End","data-nsd-action-uuid":"ee0fb178-a4e6-4d83-9f3d-cf9cc93be28d","type":"leaf"},{"a_attr":{"onclick":"window.location='../../../2b4e8129b02d487f-2/children/2b4e8129b02d487f-10/index.html';"},"id":"nsd-app-nav-item-2b4e8129b02d487f-10","text":"Merge","data-nsd-action-uuid":"a936ef29-d6ee-4ff0-8441-ed8132273caa","type":"leaf"},{"a_attr":{"onclick":"window.location='../../../2b4e8129b02d487f-2/children/2b4e8129b02d487f-5/index.html';"},"id":"nsd-app-nav-item-2b4e8129b02d487f-5","text":"Start","data-nsd-action-uuid":"2ed3c56d-6849-429e-bbe8-9fca031e7940","type":"leaf"}],"id":"nsd-app-nav-item-2b4e8129b02d487f-2","text":"Team 1","data-nsd-action-uuid":"45a34a64-f913-497d-8960-7b5b79a97fae"},{"a_attr":{"onclick":"window.location='../../../2b4e8129b02d487f-3/index.html';"},"children":[{"a_attr":{"onclick":"window.location='../../../2b4e8129b02d487f-3/children/2b4e8129b02d487f-12/index.html';"},"id":"nsd-app-nav-item-2b4e8129b02d487f-12","text":"Activity 2","data-nsd-action-uuid":"3bf519a8-ba39-4d9e-bda3-9704f3145a49","type":"leaf"},{"a_attr":{"onclick":"window.location='../../../2b4e8129b02d487f-3/children/2b4e8129b02d487f-13/index.html';"},"id":"nsd-app-nav-item-2b4e8129b02d487f-13","text":"Decision A","data-nsd-action-uuid":"72d720fa-c263-4f1b-838e-65dceb9c0393","type":"leaf"}],"id":"nsd-app-nav-item-2b4e8129b02d487f-3","text":"Team 2","data-nsd-action-uuid":"3de17958-4afd-4195-91b1-176bf9dc9578"},{"a_attr":{"onclick":"window.location='../../index.html';"},"children":[{"state":{"selected":true},"id":"nsd-app-nav-item-2b4e8129b02d487f-14","text":"Activity 4","data-nsd-action-uuid":"364b50a0-dca7-4193-b75c-ccbb79f2b5e9","type":"leaf"},{"a_attr":{"onclick":"window.location='../2b4e8129b02d487f-17/index.html';"},"id":"nsd-app-nav-item-2b4e8129b02d487f-17","text":"Activity 7","data-nsd-action-uuid":"81d45b67-e2d9-42ad-ac6d-78c8a33f5453","type":"leaf"},{"a_attr":{"onclick":"window.location='../2b4e8129b02d487f-15/index.html';"},"id":"nsd-app-nav-item-2b4e8129b02d487f-15","text":"Decision B","data-nsd-action-uuid":"a5b8b503-be6a-407f-bd11-72176563570f","type":"leaf"},{"a_attr":{"onclick":"window.location='../2b4e8129b02d487f-16/index.html';"},"id":"nsd-app-nav-item-2b4e8129b02d487f-16","text":"Split","data-nsd-action-uuid":"510cb56d-19d0-4e2a-9a21-bdea17799ebe","type":"leaf"}],"id":"nsd-app-nav-item-2b4e8129b02d487f-4","text":"Team 3","data-nsd-action-uuid":"3a5241d0-1080-47e6-84ca-9a6a55467a10"}],"id":"nsd-app-nav-item-2b4e8129b02d487f-1","text":"Process A","data-nsd-action-uuid":"459a3cf6-ef68-4206-8825-3dbba850581f"}]},"search":{"show_only_matches":true,"show_only_matches_children":true},"types":{"leaf":{"icon":"jstree-file"}},"plugins":["state","type","search"],"state":{"key":"0-navigation-panel"}}));
+// Tokens: searchInputSelector, timer, treeSelector
+$('#0-navigation-panel_searchInput').keyup(function () {
+    if (window['nsd_jstTreeSearchTimer_nsd_pz']) { 
+		clearTimeout(window['nsd_jstTreeSearchTimer_nsd_pz']); 
+	}
+    window['nsd_jstTreeSearchTimer_nsd_pz'] = setTimeout(function () {
+      var v = $('#0-navigation-panel_searchInput').val();
+      $('#0-navigation-panel').jstree(true).search(v);
+    }, 250);
+  });
+
+});</script>
+        </div>
+        <div data-nsd-action-uuid="364b50a0-dca7-4193-b75c-ccbb79f2b5e9" class="col nsd-app-content-panel">
+          <div class="container-fluid">
+            <div class="row nsd-app-content-panel-breadcrumb-row">
+              <div class="col">
+                <nav aria-label="breadcrumb" class="nsd-app-content-panel-breadcrumb">
+                  <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                      <a href="../../../../index.html" data-nsd-action-uuid="459a3cf6-ef68-4206-8825-3dbba850581f">Process A</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                      <a href="../../index.html" data-nsd-action-uuid="3a5241d0-1080-47e6-84ca-9a6a55467a10">Team 3</a>
+                    </li>
+                    <li class="breadcrumb-item active">
+                      <a data-nsd-action-uuid="364b50a0-dca7-4193-b75c-ccbb79f2b5e9">Activity 4</a>
+                    </li>
+                  </ol>
+                </nav>
+              </div>
+            </div>
+            <div class="row nsd-app-content-panel-title-and-items-row">
+              <div class="col-auto">
+                <h1><span data-nsd-action-uuid="364b50a0-dca7-4193-b75c-ccbb79f2b5e9" class="nsd-app-content-panel-title">Activity 4</span>
+                </h1>
+              </div>
+            </div>
+            <div class="row nsd-app-content-panel-content-row">
+              <div class="col">
+                <div class="container-fluid">
+                  <div class="row">
+                    <div class="col"><ul>
+</ul>
+</div>
+                  </div>
+                  <div class="row">
+                    <div class="col">
+                      <div class="container-fluid">
+                        <div class="row nsd-app-content-panel-title-and-items-row">
+                          <div class="col-auto">
+                            <h2>
+                              <a name="inbound-connections" data-nsd-action-uuid="5e51dd56-8ab4-47a8-b870-e00617223521" class="nsd-app-content-panel-title">Inbound connections</a>
+                            </h2>
+                          </div>
+                        </div>
+                        <div class="row nsd-app-content-panel-content-row">
+                          <div class="col">
+                            <div class="container-fluid">
+                              <div class="row">
+                                <div class="col">
+<table style="width:auto" class="table table-bordered">
+  <tbody><tr>
+    <th>Label</th>
+    <th>Source</th>
+    <th>Tooltip</th>
+  </tr>
+  <tr>
+    <td>Yes</td>
+    <td><a href="../../../2b4e8129b02d487f-3/children/2b4e8129b02d487f-13/index.html">Decision A</a></td>
+    <td></td>
+  </tr>
+</tbody></table></div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col">
+                      <div class="container-fluid">
+                        <div class="row nsd-app-content-panel-title-and-items-row">
+                          <div class="col-auto">
+                            <h2>
+                              <a name="outbound-connections" data-nsd-action-uuid="c41ae42e-d867-4b75-868e-0d01020c7ca3" class="nsd-app-content-panel-title">Outbound connections</a>
+                            </h2>
+                          </div>
+                        </div>
+                        <div class="row nsd-app-content-panel-content-row">
+                          <div class="col">
+                            <div class="container-fluid">
+                              <div class="row">
+                                <div class="col">
+<table style="width:auto" class="table table-bordered">
+  <tbody><tr>
+    <th>Label</th>
+    <th>Target</th>
+    <th>Tooltip</th>
+  </tr>
+  <tr>
+    <td></td>
+    <td><a href="../2b4e8129b02d487f-15/index.html">Decision B</a></td>
+    <td></td>
+  </tr>
+</tbody></table></div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col nsd-app-footer">
+          <ul class="nav nsd-app-footer-navs">
+            <li class="nav-item">
+              <a href="https://github.com/Nasdanika/demo-drawio-actions" data-nsd-action-uuid="0a729ed7-c33f-4a36-b027-c9588d8a1dec" class="nav-link"><span class="fab fa-github nsd-app-label-icon"></span>Source</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  
+</body></html>

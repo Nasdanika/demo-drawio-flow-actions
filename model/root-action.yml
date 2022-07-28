@@ -1,0 +1,21 @@
+app-action:
+  icon: https://docs.nasdanika.org/images/nasdanika-logo.png
+  text: Nasdanika
+  location: https://www.nasdanika.org 
+  tooltip: Root action
+  children:
+    - app-action:
+        location: ${base-uri}search.html
+        icon: fas fa-search
+        text: Search
+        content:
+          content-interpolator:
+            source:
+              content-resource: search.html
+  navigation:
+    - app-action:
+        icon: fab fa-github
+        text: Source
+        location: https://github.com/Nasdanika/demo-drawio-actions 
+          
+          
