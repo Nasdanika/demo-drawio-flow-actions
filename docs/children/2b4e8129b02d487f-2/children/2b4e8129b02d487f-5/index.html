@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="EN">
+  <head>
+    <title>Start</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.5.2/cerulean/bootstrap.min.css" id="nsd-bootstrap-theme-stylesheet">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.min.js"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Nasdanika/html@master/model/app.gen/web-resources/css/app.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jstree@3.3.11/dist/themes/default/style.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.3.1/build/styles/default.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-vue@2.21.2/dist/bootstrap-vue.css">
+    <script src="https://cdn.jsdelivr.net/gh/Nasdanika/html@master/model/app.gen/web-resources/js/common.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/Nasdanika/html@master/model/app.gen/web-resources/js/dark-head.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jstree@3.3.11/dist/jstree.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.3.1/build/highlight.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-vue@2.21.2/dist/bootstrap-vue.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/Nasdanika/html@master/model/app.gen/web-resources/js/components/table.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script><!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-9BRJVLK8CC"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-9BRJVLK8CC');
+</script>    
+
+<script src="../../../../search-documents.js"></script>
+
+<script src="https://unpkg.com/lunr/lunr.js"></script>
+
+<script>
+// Script for full-text search of JsTree
+
+window.nsdJsTreeSearchCallback = function(str, node) { 
+    var sf = new $.vakata.search(str, true, { caseSensitive : false, fuzzy : false }); 
+    if (sf.search(node.text).isMatch) {
+		return true;
+	} 
+    let searchResult = this.search(str); 
+    for (const sr in searchResult) {
+        if (searchResult[sr].ref === node.original['data-nsd-action-uuid']) {
+            return true;
+        } 
+    } 
+    return false; 
+}.bind(lunr(function () {
+			  this.ref('id');
+			  this.field('title');
+			  this.field('content');
+
+			  for (const key in searchDocuments) {
+				  let doc = searchDocuments[key];
+				this.add({
+					id: doc['action-uuid'],
+					title: doc.title,
+					path: doc.path,
+					content: doc.content
+				});  
+			  }
+			}));
+</script>
+</head>
+  <body>
+    <div class="container-fluid nsd-app-container">
+      <div class="row">
+        <div class="col nsd-app-header">
+          <a href="https://www.nasdanika.org" title="Root action" data-nsd-action-uuid="dd0a0a36-e64c-424c-9dae-ebc7a666404a" class="nsd-app-header-title">
+            <img src="https://docs.nasdanika.org/images/nasdanika-logo.png" class="nsd-app-label-icon">Nasdanika</a>
+          <ul class="nav nsd-app-header-navs">
+            <li class="nav-item">
+              <a href="../../../../search.html" data-nsd-action-uuid="a225940a-bbdb-429e-8227-287f132e5b68" class="nav-link"><span class="fas fa-search nsd-app-label-icon"></span>Search</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col nsd-app-navbar">
+          <ul class="navbar navbar-light navbar-expand-lg">
+            <a href="../../../../index.html" data-nsd-action-uuid="275ba2ff-94e9-47bc-98b3-d35af6e99810" class="navbar-brand">Process A</a>
+            <button type="button" data-toggle="collapse" data-target="#nsd_4zc" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler"><span class="navbar-toggler-icon"></span>
+            </button>
+            <div id="nsd_4zc" class="collapse navbar-collapse"></div>
+          </ul>
+        </div>
+      </div>
+      <div class="row nsd-app-content-row">
+        <div class="col nsd-app-navigation-panel">
+          <input type="text" id="2b4e8129b02d487f-1-navigation-panel_searchInput" title="Full-text search. You can use wildcards, e.g. 'foo*' or 'f*o'; title or content fields, e.g. 'title:foo* bar'; boosts, e.g. 'foo^10 bar'; fuzzy matches, e.g. 'foo~1'; and term presence, e.g. '+foo bar -baz'" class="form-control mt-1">
+          <div id="2b4e8129b02d487f-1-navigation-panel"></div>
+          <script>$(document).ready( function() {
+$('#2b4e8129b02d487f-1-navigation-panel').jstree(function(tree) { tree.state.filter = function(state) { delete state.core.selected; return state; };  tree.search.search_callback = function(searchStr, node) { if (typeof window.nsdJsTreeSearchCallback === 'function') return window.nsdJsTreeSearchCallback(searchStr, node); var sf = new $.vakata.search(searchStr, true, { caseSensitive : false, fuzzy : false }); return sf.search(node.text).isMatch; }; return tree; }({"core":{"data":[{"a_attr":{"onclick":"window.location='../../index.html';"},"children":[{"a_attr":{"onclick":"window.location='../2b4e8129b02d487f-6/index.html';"},"id":"nsd-app-nav-item-2b4e8129b02d487f-6","text":"Activity 1","data-nsd-action-uuid":"19644065-1fa1-45e4-b06a-2c5b372237d6","type":"leaf"},{"a_attr":{"onclick":"window.location='../2b4e8129b02d487f-7/index.html';"},"children":[{"a_attr":{"onclick":"window.location='../2b4e8129b02d487f-7/children/nyDErOf45Nq0Kb2UPtJH-1/index.html';"},"id":"nsd-app-nav-item-nyDErOf45Nq0Kb2UPtJH-1","text":"Step 3.1","data-nsd-action-uuid":"b80df676-7587-4fd9-a284-86f50b17d6b2","type":"leaf"},{"a_attr":{"onclick":"window.location='../2b4e8129b02d487f-7/children/nyDErOf45Nq0Kb2UPtJH-3/index.html';"},"id":"nsd-app-nav-item-nyDErOf45Nq0Kb2UPtJH-3","text":"Step 3.2","data-nsd-action-uuid":"b1d520e7-4a1a-44f6-a6b7-c294cbb29e64","type":"leaf"},{"a_attr":{"onclick":"window.location='../2b4e8129b02d487f-7/children/nyDErOf45Nq0Kb2UPtJH-2/index.html';"},"id":"nsd-app-nav-item-nyDErOf45Nq0Kb2UPtJH-2","text":"Step 3.3","data-nsd-action-uuid":"63fa761e-5d75-48a8-9bcd-ab35e0a9f540","type":"leaf"}],"id":"nsd-app-nav-item-2b4e8129b02d487f-7","text":"Activity 3","data-nsd-action-uuid":"257200a2-4a06-44ef-9c9d-41f5330defd6"},{"a_attr":{"onclick":"window.location='../2b4e8129b02d487f-9/index.html';"},"id":"nsd-app-nav-item-2b4e8129b02d487f-9","text":"Activity 6","data-nsd-action-uuid":"60fb6ca4-ca65-46ab-9755-cd23b54ac5a8","type":"leaf"},{"a_attr":{"onclick":"window.location='../2b4e8129b02d487f-11/index.html';"},"id":"nsd-app-nav-item-2b4e8129b02d487f-11","text":"End","data-nsd-action-uuid":"d99e6a54-ac51-4860-8958-6529ce53932c","type":"leaf"},{"a_attr":{"onclick":"window.location='../2b4e8129b02d487f-10/index.html';"},"id":"nsd-app-nav-item-2b4e8129b02d487f-10","text":"Merge","data-nsd-action-uuid":"54568fdc-34bb-4cc0-b07f-080bcf0a5203","type":"leaf"},{"state":{"selected":true},"id":"nsd-app-nav-item-2b4e8129b02d487f-5","text":"Start","data-nsd-action-uuid":"30f4b064-a282-4b83-ba61-729dd46ccfa2","type":"leaf"}],"id":"nsd-app-nav-item-2b4e8129b02d487f-2","text":"Team 1","data-nsd-action-uuid":"618fe554-b746-4e4b-acf3-cf2157258e25"},{"a_attr":{"onclick":"window.location='../../../2b4e8129b02d487f-3/index.html';"},"children":[{"a_attr":{"onclick":"window.location='../../../2b4e8129b02d487f-3/children/2b4e8129b02d487f-12/index.html';"},"id":"nsd-app-nav-item-2b4e8129b02d487f-12","text":"Activity 2","data-nsd-action-uuid":"8b43dddc-1aa7-4de6-8646-1f25fd9c0b4c","type":"leaf"},{"a_attr":{"onclick":"window.location='../../../2b4e8129b02d487f-3/children/2b4e8129b02d487f-13/index.html';"},"id":"nsd-app-nav-item-2b4e8129b02d487f-13","text":"Decision A","data-nsd-action-uuid":"ab453106-d555-4b9b-8273-ec3b0708af8c","type":"leaf"}],"id":"nsd-app-nav-item-2b4e8129b02d487f-3","text":"Team 2","data-nsd-action-uuid":"f6ac557a-26cf-4476-bb56-b92f4d1d2b2b"},{"a_attr":{"onclick":"window.location='../../../2b4e8129b02d487f-4/index.html';"},"children":[{"a_attr":{"onclick":"window.location='../../../2b4e8129b02d487f-4/children/2b4e8129b02d487f-14/index.html';"},"id":"nsd-app-nav-item-2b4e8129b02d487f-14","text":"Activity 4","data-nsd-action-uuid":"1d41d7e5-5156-4fac-badd-3e291dfd400c","type":"leaf"},{"a_attr":{"onclick":"window.location='../../../2b4e8129b02d487f-4/children/2b4e8129b02d487f-17/index.html';"},"id":"nsd-app-nav-item-2b4e8129b02d487f-17","text":"Activity 7","data-nsd-action-uuid":"79db49ef-d9c1-4a97-a40e-7841d1005c6f","type":"leaf"},{"a_attr":{"onclick":"window.location='../../../2b4e8129b02d487f-4/children/2b4e8129b02d487f-15/index.html';"},"id":"nsd-app-nav-item-2b4e8129b02d487f-15","text":"Decision B","data-nsd-action-uuid":"c6c3dce9-6850-4c46-9570-28f242641c85","type":"leaf"},{"a_attr":{"onclick":"window.location='../../../2b4e8129b02d487f-4/children/2b4e8129b02d487f-16/index.html';"},"id":"nsd-app-nav-item-2b4e8129b02d487f-16","text":"Split","data-nsd-action-uuid":"be07351d-7155-41f8-af46-e9b9a7bba996","type":"leaf"}],"id":"nsd-app-nav-item-2b4e8129b02d487f-4","text":"Team 3","data-nsd-action-uuid":"013aa7e5-b36b-4c84-98ce-b0e8cf53a46e"}]},"search":{"show_only_matches":true,"show_only_matches_children":true},"types":{"leaf":{"icon":"jstree-file"}},"plugins":["state","type","search"],"state":{"key":"2b4e8129b02d487f-1-navigation-panel"}}));
+// Tokens: searchInputSelector, timer, treeSelector
+$('#2b4e8129b02d487f-1-navigation-panel_searchInput').keyup(function () {
+    if (window['nsd_jstTreeSearchTimer_nsd_4zv']) { 
+		clearTimeout(window['nsd_jstTreeSearchTimer_nsd_4zv']); 
+	}
+    window['nsd_jstTreeSearchTimer_nsd_4zv'] = setTimeout(function () {
+      var v = $('#2b4e8129b02d487f-1-navigation-panel_searchInput').val();
+      $('#2b4e8129b02d487f-1-navigation-panel').jstree(true).search(v);
+    }, 250);
+  });
+
+});</script>
+        </div>
+        <div data-nsd-action-uuid="30f4b064-a282-4b83-ba61-729dd46ccfa2" class="col nsd-app-content-panel">
+          <div class="container-fluid">
+            <div class="row nsd-app-content-panel-breadcrumb-row">
+              <div class="col">
+                <nav aria-label="breadcrumb" class="nsd-app-content-panel-breadcrumb">
+                  <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                      <a href="../../index.html" data-nsd-action-uuid="618fe554-b746-4e4b-acf3-cf2157258e25">Team 1</a>
+                    </li>
+                    <li class="breadcrumb-item active">
+                      <a data-nsd-action-uuid="30f4b064-a282-4b83-ba61-729dd46ccfa2">Start</a>
+                    </li>
+                  </ol>
+                </nav>
+              </div>
+            </div>
+            <div class="row nsd-app-content-panel-title-and-items-row">
+              <div class="col-auto">
+                <h1><span data-nsd-action-uuid="30f4b064-a282-4b83-ba61-729dd46ccfa2" class="nsd-app-content-panel-title">Start</span>
+                </h1>
+              </div>
+            </div>
+            <div class="row nsd-app-content-panel-content-row">
+              <div class="col">
+                <div class="container-fluid">
+                  <div class="row">
+                    <div class="col"><ul>
+</ul>
+</div>
+                  </div>
+                  <div class="row">
+                    <div class="col">
+                      <div class="container-fluid">
+                        <div class="row nsd-app-content-panel-title-and-items-row">
+                          <div class="col-auto">
+                            <h2>
+                              <a name="outbound-connections" data-nsd-action-uuid="def883b5-e893-48a2-b3a0-e520ddcf457a" class="nsd-app-content-panel-title">Outbound connections</a>
+                            </h2>
+                          </div>
+                        </div>
+                        <div class="row nsd-app-content-panel-content-row">
+                          <div class="col">
+                            <div class="container-fluid">
+                              <div class="row">
+                                <div class="col">
+<table style="width:auto" class="table table-bordered">
+  <tbody><tr>
+    <th>Label</th>
+    <th>Target</th>
+    <th>Tooltip</th>
+  </tr>
+  <tr>
+    <td></td>
+    <td><a href="../2b4e8129b02d487f-6/index.html">Activity 1</a></td>
+    <td></td>
+  </tr>
+</tbody></table></div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col nsd-app-footer">
+          <ul class="nav nsd-app-footer-navs">
+            <li class="nav-item">
+              <a href="https://github.com/Nasdanika/demo-drawio-actions" data-nsd-action-uuid="00b45a8c-696e-40a2-8d75-13e491255ba5" class="nav-link"><span class="fab fa-github nsd-app-label-icon"></span>Source</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  
+</body></html>
