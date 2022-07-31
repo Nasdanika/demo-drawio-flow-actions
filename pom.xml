@@ -6,7 +6,7 @@
 	<version>1.0.0</version>
 	<packaging>jar</packaging>
 	<name>Drawio flow actions demo</name>
-	<description>Demo of generating an action model and then a static web site from a drawio flow diagram using actions resource factory.</description>
+	<description>Demo of generating an action model and then a static web site from a drawio flow diagram using actions resource factory</description>
 	<build>
 		<plugins>
 			<plugin>
