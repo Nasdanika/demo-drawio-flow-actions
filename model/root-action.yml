@@ -16,6 +16,6 @@ app-action:
     - app-action:
         icon: fab fa-github
         text: Source
-        location: https://github.com/Nasdanika/demo-drawio-actions 
+        location: https://github.com/Nasdanika/demo-drawio-flow-actions 
           
           
