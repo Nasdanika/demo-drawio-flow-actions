@@ -1,0 +1,8 @@
+app-action:
+  location: ${base-uri}flow/search.html
+  icon: fas fa-search
+  text: Search
+  content:
+    content-interpolator:
+      source:
+        content-resource: search.html

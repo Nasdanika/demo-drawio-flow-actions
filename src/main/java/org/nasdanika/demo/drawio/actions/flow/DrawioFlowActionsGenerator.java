@@ -1,8 +1,5 @@
 package org.nasdanika.demo.drawio.actions.flow;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
@@ -37,11 +34,11 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.Diagnostician;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.json.JSONObject;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.junit.Test;
 import org.nasdanika.common.ConsumerFactory;
 import org.nasdanika.common.Context;
 import org.nasdanika.common.DefaultConverter;
@@ -53,8 +50,6 @@ import org.nasdanika.common.NullProgressMonitor;
 import org.nasdanika.common.ProgressMonitor;
 import org.nasdanika.common.Status;
 import org.nasdanika.common.SupplierFactory;
-import org.nasdanika.common.resources.BinaryEntityContainer;
-import org.nasdanika.common.resources.FileSystemContainer;
 import org.nasdanika.drawio.ConnectionBase;
 import org.nasdanika.emf.EObjectAdaptable;
 import org.nasdanika.emf.persistence.EObjectLoader;
@@ -69,11 +64,11 @@ import org.nasdanika.exec.resources.ResourcesPackage;
 import org.nasdanika.html.jstree.JsTreeFactory;
 import org.nasdanika.html.jstree.JsTreeNode;
 import org.nasdanika.html.model.app.Action;
-import org.nasdanika.html.model.app.ActionReference;
 import org.nasdanika.html.model.app.AppFactory;
 import org.nasdanika.html.model.app.AppPackage;
 import org.nasdanika.html.model.app.Label;
 import org.nasdanika.html.model.app.Link;
+import org.nasdanika.html.model.app.drawio.ResourceFactory;
 import org.nasdanika.html.model.app.gen.ActionContentProvider;
 import org.nasdanika.html.model.app.gen.AppAdapterFactory;
 import org.nasdanika.html.model.app.gen.AppGenYamlSupplier;
@@ -81,17 +76,23 @@ import org.nasdanika.html.model.app.gen.LinkJsTreeNodeSupplierFactoryAdapter;
 import org.nasdanika.html.model.app.gen.NavigationPanelConsumerFactoryAdapter;
 import org.nasdanika.html.model.app.gen.PageContentProvider;
 import org.nasdanika.html.model.app.gen.Util;
-import org.nasdanika.html.model.app.util.AppDrawioResourceFactory;
 import org.nasdanika.html.model.bootstrap.BootstrapPackage;
 import org.nasdanika.html.model.html.HtmlPackage;
 import org.nasdanika.ncore.NcorePackage;
 import org.nasdanika.ncore.util.NcoreResourceSet;
+import org.nasdanika.resources.BinaryEntityContainer;
+import org.nasdanika.resources.FileSystemContainer;
 
 import com.redfin.sitemapgenerator.ChangeFreq;
 import com.redfin.sitemapgenerator.WebSitemapGenerator;
 import com.redfin.sitemapgenerator.WebSitemapUrl;
 
-public class TestDrawioFlowActionsGen {
+/**
+ * Tests of agile flows.
+ * @author Pavel
+ *
+ */
+public class DrawioFlowActionsGenerator {
 	
 	private static final File GENERATED_MODELS_BASE_DIR = new File("target/model-doc");
 	private static final File RESOURCE_MODELS_DIR = new File(GENERATED_MODELS_BASE_DIR, "resources");
@@ -101,30 +102,43 @@ public class TestDrawioFlowActionsGen {
 	 * @throws Exception
 	 */
 	private void generateResourceModel(String name, Context context, ProgressMonitor progressMonitor) throws Exception {
-		ResourceSet resourceSet = createResourceSet(context, progressMonitor); 
+		ResourceSet resourceSet = createResourceSet(context, progressMonitor);
 		
-		resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put("drawio", new AppDrawioResourceFactory(ConnectionBase.SOURCE, resourceSet));
 		EObjectLoader eObjectLoader = new EObjectLoader(null, null, resourceSet);
 		eObjectLoader.setMarkerFactory(new GitMarkerFactory());
 		Resource.Factory appYamlResourceFactory = new YamlResourceFactory(eObjectLoader, context, progressMonitor);
 		resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put("yml", appYamlResourceFactory);
 		
-		File modelFile = new File("model/" + name);
-		assertThat(modelFile.isFile());
-		Resource modelResource = resourceSet.getResource(URI.createFileURI(modelFile.getCanonicalPath()), true);
-		
 		Consumer<Diagnostic> diagnosticConsumer = diagnostic -> {
-			assertThat(diagnostic.getStatus()).isEqualTo(Status.SUCCESS);
+			if (diagnostic.getStatus() != Status.SUCCESS) {
+				throw new DiagnosticException(diagnostic);
+			}
 		};
 		
-		String actionsResource = "model/root-action.yml";
-		Action root = (Action) Objects.requireNonNull(loadObject(actionsResource, diagnosticConsumer, context, progressMonitor), "Loaded null from " + actionsResource);
+		resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put("drawio", new ResourceFactory(ConnectionBase.SOURCE, resourceSet) {
+			
+			
+			@Override
+			protected Action createDocumentAction(org.nasdanika.drawio.Document document) {
+				String actionsResource = "model/root-action.yml";
+				Action root = (Action) Objects.requireNonNull(loadObject(actionsResource, diagnosticConsumer, context, progressMonitor), "Loaded null from " + actionsResource);
+				
+				return EcoreUtil.copy(root);
+			}
+			
+		});
 		
-		ActionReference actionReference = AppFactory.eINSTANCE.createActionReference();
-		root.getChildren().add(0, actionReference);
-		Action firstPage = (Action) modelResource.getContents().get(0);
-		firstPage.setLocation("${base-uri}index.html");
-		actionReference.setTarget(firstPage);
+		File modelFile = new File("model/" + name);
+		if (!modelFile.isFile()) {
+			throw new IllegalArgumentException("Not a file: " + modelFile);
+		}
+		Resource modelResource = resourceSet.getResource(URI.createFileURI(modelFile.getCanonicalPath()), true);
+		
+		Action root = (Action) modelResource.getContents().get(0);
+		
+		String searchActionResource = "model/search-action.yml";
+		Action searchAction = (Action) Objects.requireNonNull(loadObject(searchActionResource, diagnosticConsumer, context, progressMonitor), "Loaded null from " + searchActionResource);
+		root.getChildren().add(searchAction);
 		
 		Container container = ResourcesFactory.eINSTANCE.createContainer();
 		container.setName(name);
@@ -152,6 +166,7 @@ public class TestDrawioFlowActionsGen {
 				JsTreeFactory jsTreeFactory = context.get(JsTreeFactory.class, JsTreeFactory.INSTANCE);
 				Map<Action, JsTreeNode> nodeMap = new HashMap<>();
 				
+				Action firstPage = (Action) root.getChildren().get(0);
 				nodeMap.put(firstPage, createActionSearchJsTreeNode(firstPage, action, uriResolver, ctx, progressMonitor));
 				TreeIterator<EObject> cit = firstPage.eAllContents();
 				while (cit.hasNext()) {
@@ -223,6 +238,8 @@ public class TestDrawioFlowActionsGen {
 			SupplierFactory<InputStream> contentFactory = org.nasdanika.common.Util.asInputStreamSupplierFactory(action.getContent());			
 			try (InputStream contentStream = org.nasdanika.common.Util.call(contentFactory.create(mctx), pMonitor, diagnosticConsumer, Status.FAIL, Status.ERROR)) {
 				Files.copy(contentStream, new File(contentDir, fileName).toPath(), StandardCopyOption.REPLACE_EXISTING);
+			} catch (IOException e) {
+				throw new NasdanikaException(e);
 			}
 			
 			org.nasdanika.exec.content.Resource contentResource = ContentFactory.eINSTANCE.createResource();
@@ -234,20 +251,24 @@ public class TestDrawioFlowActionsGen {
 		File pagesDir = new File(RESOURCE_MODELS_DIR, "pages");
 		pagesDir.mkdirs();
 		PageContentProvider.Factory pageContentProviderFactory = (contentProviderContext) -> (page, baseURI, uriResolver, pMonitor) -> {
-			// Saving a page to .xml and creating a reference to .html; Pages shall be processed from .xml to .html individually.
-			page.setUuid(UUID.randomUUID().toString());
-			
-			ResourceSet pageResourceSet = new ResourceSetImpl();
-			pageResourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put(Resource.Factory.Registry.DEFAULT_EXTENSION, new XMIResourceFactoryImpl());			
-			URI pageURI = URI.createFileURI(new File(pagesDir, page.getUuid() + ".xml").getCanonicalPath());
-			Resource pageEResource = pageResourceSet.createResource(pageURI);
-			pageEResource.getContents().add(page);
-			pageEResource.save(null);
-			
-			org.nasdanika.exec.content.Resource pageResource = ContentFactory.eINSTANCE.createResource();
-			pageResource.setLocation("pages/" + page.getUuid() + ".html");
-			System.out.println("[Page content] " + page.getName() + " -> " + pageResource.getLocation());
-			return pageResource;			
+			try {
+				// Saving a page to .xml and creating a reference to .html; Pages shall be processed from .xml to .html individually.
+				page.setUuid(UUID.randomUUID().toString());
+				
+				ResourceSet pageResourceSet = new ResourceSetImpl();
+				pageResourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put(Resource.Factory.Registry.DEFAULT_EXTENSION, new XMIResourceFactoryImpl());			
+				URI pageURI = URI.createFileURI(new File(pagesDir, page.getUuid() + ".xml").getCanonicalPath());
+				Resource pageEResource = pageResourceSet.createResource(pageURI);
+				pageEResource.getContents().add(page);
+				pageEResource.save(null);
+				
+				org.nasdanika.exec.content.Resource pageResource = ContentFactory.eINSTANCE.createResource();
+				pageResource.setLocation("pages/" + page.getUuid() + ".html");
+				System.out.println("[Page content] " + page.getName() + " -> " + pageResource.getLocation());
+				return pageResource;
+			} catch (IOException e) {
+				throw new NasdanikaException(e);
+			}
 		};
 		
 		Util.generateSite(
@@ -310,7 +331,7 @@ public class TestDrawioFlowActionsGen {
 			String resource, 
 			java.util.function.Consumer<org.nasdanika.common.Diagnostic> diagnosticConsumer,
 			Context context,
-			ProgressMonitor progressMonitor) throws Exception {
+			ProgressMonitor progressMonitor) {
 		
 		URI resourceURI = URI.createFileURI(new File(resource).getAbsolutePath());
 
@@ -347,8 +368,7 @@ public class TestDrawioFlowActionsGen {
 		
 		return resourceSet;
 	}
-	
-	
+		
 	/**
 	 * Generates files from the previously generated resource model.
 	 * @throws Exception
@@ -366,7 +386,9 @@ public class TestDrawioFlowActionsGen {
 		for (EObject eObject : containerResource.getContents()) {
 			Diagnostician diagnostician = new Diagnostician();
 			org.eclipse.emf.common.util.Diagnostic diagnostic = diagnostician.validate(eObject);
-			assertThat(diagnostic.getSeverity()).isNotEqualTo(org.eclipse.emf.common.util.Diagnostic.ERROR);
+			if (org.eclipse.emf.common.util.Diagnostic.ERROR == diagnostic.getSeverity()) {
+				throw new org.eclipse.emf.common.util.DiagnosticException(diagnostic);
+			}
 			// Diagnosing loaded resources. 
 			try {
 				ConsumerFactory<BinaryEntityContainer> consumerFactory = Objects.requireNonNull(EObjectAdaptable.adaptToConsumerFactory(eObject, BinaryEntityContainer.class), "Cannot adapt to ConsumerFactory");
@@ -377,7 +399,9 @@ public class TestDrawioFlowActionsGen {
 					System.err.println("***********************");
 					callDiagnostic.dump(System.err, 4, Status.FAIL, Status.ERROR);
 				}
-				assertThat(callDiagnostic.getStatus()).isEqualTo(Status.SUCCESS);
+				if (Status.SUCCESS != callDiagnostic.getStatus()) {
+					throw new DiagnosticException(callDiagnostic);
+				}
 			} catch (DiagnosticException e) {
 				System.err.println("******************************");
 				System.err.println("*      Diagnostic failed     *");
@@ -393,7 +417,7 @@ public class TestDrawioFlowActionsGen {
 		};
 
 		File docsDir = new File("docs");
-		copy(new File(siteDir, name), docsDir, true, cleanPredicate, null);
+		copy(new File(siteDir, name + "\\flow"), docsDir, true, cleanPredicate, null);
 		
 		generateSitemapAndSearch(docsDir);
 	}
@@ -477,7 +501,7 @@ public class TestDrawioFlowActionsGen {
 							System.err.println("[" + path +"] " + error);
 							problems.incrementAndGet();
 						});
-						JSONObject searchDocument = org.nasdanika.html.model.app.gen.Util.createSearchDocument(path, file, inspector, TestDrawioFlowActionsGen.this::configureSearch);
+						JSONObject searchDocument = org.nasdanika.html.model.app.gen.Util.createSearchDocument(path, file, inspector, DrawioFlowActionsGenerator.this::configureSearch);
 						if (searchDocument != null) {
 							searchDocuments.put(path, searchDocument);
 						}
@@ -495,7 +519,7 @@ public class TestDrawioFlowActionsGen {
 		}
 		
 		if (problems.get() > 0) {
-			fail("There are broken links: " + problems.get());
+			throw new NasdanikaException("There are broken links: " + problems.get());
 		};
 	}
 		
@@ -528,7 +552,6 @@ public class TestDrawioFlowActionsGen {
 		}
 	}	
 	
-	@Test
 	public void generate() throws Exception {
 		delete(new File("docs").listFiles());
 		ProgressMonitor progressMonitor = new NullProgressMonitor(); // PrintStreamProgressMonitor();		

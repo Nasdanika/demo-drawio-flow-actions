@@ -3,15 +3,6 @@ app-action:
   text: Nasdanika
   location: https://www.nasdanika.org 
   tooltip: Root action
-  children:
-    - app-action:
-        location: ${base-uri}search.html
-        icon: fas fa-search
-        text: Search
-        content:
-          content-interpolator:
-            source:
-              content-resource: search.html
   navigation:
     - app-action:
         icon: fab fa-github
