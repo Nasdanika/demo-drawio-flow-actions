@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.nasdanika.demo.drawio</groupId>
 	<artifactId>flow-actions</artifactId>
-	<version>1.0.0</version>
+	<version>2022.9.0</version>
 	<packaging>jar</packaging>
 	<name>Drawio flow actions demo</name>
 	<description>Demo of generating an action model and then a static web site from a drawio flow diagram using actions resource factory</description>
