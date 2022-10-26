@@ -8,5 +8,9 @@ app-action:
         icon: fab fa-github
         text: Source
         location: https://github.com/Nasdanika/demo-drawio-flow-actions 
+    - app-action:
+       icon: fas fa-book
+       text: Documentation
+       location: https://docs.nasdanika.org/modules/demos/modules/app-drawio/modules/flow-actions/index.html 
           
           

@@ -1,3 +1,11 @@
 engineering-product:
-   name: Flow Actions
-   path: flow-actions
+  name: Flow Actions
+  path: flow-actions
+  documentation:
+    content-interpolator:
+      source:
+        content-markdown:
+          style: true
+          source:
+            content-resource: doc.md
+   

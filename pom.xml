@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.nasdanika.demo.drawio</groupId>
 	<artifactId>flow-actions</artifactId>
-	<version>2022.9.0</version>
+	<version>2022.10.0</version>
 	<packaging>jar</packaging>
 	<name>Drawio flow actions demo</name>
 	<description>Demo of generating an action model and then a static web site from a drawio flow diagram using actions resource factory</description>
@@ -18,25 +18,37 @@
 					<target>11</target>
 				</configuration>
 			</plugin>		
+		        <plugin>
+		            <groupId>org.apache.maven.plugins</groupId>
+	        	    <artifactId>maven-surefire-plugin</artifactId>
+		            <version>3.0.0-M7</version>
+		            <dependencies>
+	        	        <dependency>
+	                	    <groupId>org.junit.jupiter</groupId>
+		                    <artifactId>junit-jupiter-engine</artifactId>
+		                    <version>5.9.1</version>
+	        	        </dependency>
+		            </dependencies>
+		        </plugin>
 		</plugins>
 	</build>
 	<dependencies>
 		<dependency>
 			<groupId>org.nasdanika.html</groupId>
 			<artifactId>app-model-gen</artifactId>
-			<version>2022.9.0</version>
+			<version>2022.10.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.nasdanika.html</groupId>
 			<artifactId>app-model-drawio</artifactId>
-			<version>2022.9.0</version>
+			<version>2022.10.0</version>
 		</dependency>
 		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.13.2</version>
-			<scope>test</scope>
-		</dependency>
+		    <groupId>org.junit.jupiter</groupId>
+		    <artifactId>junit-jupiter-api</artifactId>
+		    <version>5.9.1</version>
+		    <scope>test</scope>
+		</dependency>		
 		<dependency>
 			<groupId>org.assertj</groupId>
 			<artifactId>assertj-core</artifactId>
