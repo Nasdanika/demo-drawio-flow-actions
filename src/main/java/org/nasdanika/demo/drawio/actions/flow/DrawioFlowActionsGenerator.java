@@ -54,7 +54,6 @@ import org.nasdanika.drawio.ConnectionBase;
 import org.nasdanika.emf.EObjectAdaptable;
 import org.nasdanika.emf.persistence.EObjectLoader;
 import org.nasdanika.emf.persistence.GitMarkerFactory;
-import org.nasdanika.emf.persistence.YamlResourceFactory;
 import org.nasdanika.exec.ExecPackage;
 import org.nasdanika.exec.content.ContentFactory;
 import org.nasdanika.exec.content.ContentPackage;
@@ -71,7 +70,7 @@ import org.nasdanika.html.model.app.Link;
 import org.nasdanika.html.model.app.drawio.ResourceFactory;
 import org.nasdanika.html.model.app.gen.ActionContentProvider;
 import org.nasdanika.html.model.app.gen.AppAdapterFactory;
-import org.nasdanika.html.model.app.gen.AppGenYamlSupplier;
+import org.nasdanika.html.model.app.gen.AppGenObjectLoaderSupplier;
 import org.nasdanika.html.model.app.gen.LinkJsTreeNodeSupplierFactoryAdapter;
 import org.nasdanika.html.model.app.gen.NavigationPanelConsumerFactoryAdapter;
 import org.nasdanika.html.model.app.gen.PageContentProvider;
@@ -80,6 +79,8 @@ import org.nasdanika.html.model.bootstrap.BootstrapPackage;
 import org.nasdanika.html.model.html.HtmlPackage;
 import org.nasdanika.ncore.NcorePackage;
 import org.nasdanika.ncore.util.NcoreResourceSet;
+import org.nasdanika.persistence.ObjectLoader;
+import org.nasdanika.persistence.ObjectLoaderResourceFactory;
 import org.nasdanika.resources.BinaryEntityContainer;
 import org.nasdanika.resources.FileSystemContainer;
 
@@ -106,8 +107,32 @@ public class DrawioFlowActionsGenerator {
 		
 		EObjectLoader eObjectLoader = new EObjectLoader(null, null, resourceSet);
 		eObjectLoader.setMarkerFactory(new GitMarkerFactory());
-		Resource.Factory appYamlResourceFactory = new YamlResourceFactory(eObjectLoader, context, progressMonitor);
-		resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put("yml", appYamlResourceFactory);
+		
+		Map<String, Object> extensionToFactoryMap = resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap();
+		extensionToFactoryMap.put(Resource.Factory.Registry.DEFAULT_EXTENSION, new XMIResourceFactoryImpl());
+		
+		ObjectLoaderResourceFactory objectLoaderResourceFactory = new ObjectLoaderResourceFactory() {
+			
+			@Override
+			protected ObjectLoader getObjectLoader(Resource resource) {
+				return eObjectLoader;
+			}
+			
+			@Override
+			protected Context getContext(Resource resource) {
+				return context;
+			}
+			
+			@Override
+			protected ProgressMonitor getProgressMonitor(Resource resource) {
+				return progressMonitor;
+			}
+			
+		};
+		
+		extensionToFactoryMap.put("yml", objectLoaderResourceFactory);
+		extensionToFactoryMap.put("json", objectLoaderResourceFactory);		
+		resourceSet.getResourceFactoryRegistry().getProtocolToFactoryMap().put("data", objectLoaderResourceFactory);
 		
 		Consumer<Diagnostic> diagnosticConsumer = diagnostic -> {
 			if (diagnostic.getStatus() != Status.SUCCESS) {
@@ -116,14 +141,18 @@ public class DrawioFlowActionsGenerator {
 		};
 		
 		resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put("drawio", new ResourceFactory(ConnectionBase.SOURCE, resourceSet) {
-			
-			
+						
 			@Override
 			protected Action createDocumentAction(org.nasdanika.drawio.Document document) {
 				String actionsResource = "model/root-action.yml";
 				Action root = (Action) Objects.requireNonNull(loadObject(actionsResource, diagnosticConsumer, context, progressMonitor), "Loaded null from " + actionsResource);
 				
 				return EcoreUtil.copy(root);
+			}
+						
+			@Override
+			protected ProgressMonitor getProgressMonitor(URI uri) {
+				return progressMonitor.split("Loading " + uri, 1);
 			}
 			
 		});
@@ -337,7 +366,7 @@ public class DrawioFlowActionsGenerator {
 
 		// Diagnosing loaded resources. 
 		try {
-			return Objects.requireNonNull(org.nasdanika.common.Util.call(new AppGenYamlSupplier(resourceURI, context), progressMonitor, diagnosticConsumer), "Loaded null from: " + resource);
+			return Objects.requireNonNull(org.nasdanika.common.Util.call(new AppGenObjectLoaderSupplier(resourceURI, context), progressMonitor, diagnosticConsumer), "Loaded null from: " + resource);
 		} catch (DiagnosticException e) {
 			System.err.println("******************************");
 			System.err.println("*      Diagnostic failed     *");
@@ -350,11 +379,25 @@ public class DrawioFlowActionsGenerator {
 	private static ResourceSet createResourceSet(Context context, ProgressMonitor progressMonitor) {
 		// Load model from XMI
 		ResourceSet resourceSet = new NcoreResourceSet();
-		Map<String, Object> extensionToFactoryMap = resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap();
-		extensionToFactoryMap.put(Resource.Factory.Registry.DEFAULT_EXTENSION, new XMIResourceFactoryImpl());
 		
-		YamlResourceFactory yamlResourceFactory = new YamlResourceFactory(new EObjectLoader(null, null, resourceSet), context, progressMonitor);
-		extensionToFactoryMap.put("yml", yamlResourceFactory);
+		EObjectLoader eObjectLoader = new EObjectLoader(null, null, resourceSet);
+		GitMarkerFactory markerFactory = new GitMarkerFactory();
+		eObjectLoader.setMarkerFactory(markerFactory);
+		
+		Resource.Factory objectLoaderResourceFactory = new ObjectLoaderResourceFactory() {
+			
+			@Override
+			protected org.nasdanika.persistence.ObjectLoader getObjectLoader(Resource resource) {
+				return eObjectLoader;
+			}
+			
+		};
+		Map<String, Object> extensionToFactoryMap = resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap();
+		extensionToFactoryMap.put("yml", objectLoaderResourceFactory);
+		extensionToFactoryMap.put("json", objectLoaderResourceFactory);
+		resourceSet.getResourceFactoryRegistry().getProtocolToFactoryMap().put("data", objectLoaderResourceFactory);
+		
+		extensionToFactoryMap.put(Resource.Factory.Registry.DEFAULT_EXTENSION, new XMIResourceFactoryImpl());
 	
 		resourceSet.getPackageRegistry().put(NcorePackage.eNS_URI, NcorePackage.eINSTANCE);
 		resourceSet.getPackageRegistry().put(ExecPackage.eNS_URI, ExecPackage.eINSTANCE);
