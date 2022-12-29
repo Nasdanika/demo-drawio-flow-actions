@@ -1,17 +1,13 @@
 package org.nasdanika.demo.drawio.actions.flow;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,8 +15,6 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.TreeMap;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -37,13 +31,11 @@ import org.eclipse.emf.ecore.util.Diagnostician;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.json.JSONObject;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.nasdanika.common.ConsumerFactory;
 import org.nasdanika.common.Context;
-import org.nasdanika.common.DefaultConverter;
 import org.nasdanika.common.Diagnostic;
 import org.nasdanika.common.DiagnosticException;
+import org.nasdanika.common.ExecutionException;
 import org.nasdanika.common.MutableContext;
 import org.nasdanika.common.NasdanikaException;
 import org.nasdanika.common.NullProgressMonitor;
@@ -52,14 +44,9 @@ import org.nasdanika.common.Status;
 import org.nasdanika.common.SupplierFactory;
 import org.nasdanika.drawio.ConnectionBase;
 import org.nasdanika.emf.EObjectAdaptable;
-import org.nasdanika.emf.persistence.EObjectLoader;
-import org.nasdanika.emf.persistence.GitMarkerFactory;
-import org.nasdanika.exec.ExecPackage;
 import org.nasdanika.exec.content.ContentFactory;
-import org.nasdanika.exec.content.ContentPackage;
 import org.nasdanika.exec.resources.Container;
 import org.nasdanika.exec.resources.ResourcesFactory;
-import org.nasdanika.exec.resources.ResourcesPackage;
 import org.nasdanika.html.jstree.JsTreeFactory;
 import org.nasdanika.html.jstree.JsTreeNode;
 import org.nasdanika.html.model.app.Action;
@@ -75,18 +62,10 @@ import org.nasdanika.html.model.app.gen.LinkJsTreeNodeSupplierFactoryAdapter;
 import org.nasdanika.html.model.app.gen.NavigationPanelConsumerFactoryAdapter;
 import org.nasdanika.html.model.app.gen.PageContentProvider;
 import org.nasdanika.html.model.app.gen.Util;
-import org.nasdanika.html.model.bootstrap.BootstrapPackage;
-import org.nasdanika.html.model.html.HtmlPackage;
-import org.nasdanika.ncore.NcorePackage;
-import org.nasdanika.ncore.util.NcoreResourceSet;
-import org.nasdanika.persistence.ObjectLoader;
-import org.nasdanika.persistence.ObjectLoaderResourceFactory;
 import org.nasdanika.resources.BinaryEntityContainer;
 import org.nasdanika.resources.FileSystemContainer;
 
 import com.redfin.sitemapgenerator.ChangeFreq;
-import com.redfin.sitemapgenerator.WebSitemapGenerator;
-import com.redfin.sitemapgenerator.WebSitemapUrl;
 
 /**
  * Tests of agile flows.
@@ -103,36 +82,7 @@ public class DrawioFlowActionsGenerator {
 	 * @throws Exception
 	 */
 	private void generateResourceModel(String name, Context context, ProgressMonitor progressMonitor) throws Exception {
-		ResourceSet resourceSet = createResourceSet(context, progressMonitor);
-		
-		EObjectLoader eObjectLoader = new EObjectLoader(null, null, resourceSet);
-		eObjectLoader.setMarkerFactory(new GitMarkerFactory());
-		
-		Map<String, Object> extensionToFactoryMap = resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap();
-		extensionToFactoryMap.put(Resource.Factory.Registry.DEFAULT_EXTENSION, new XMIResourceFactoryImpl());
-		
-		ObjectLoaderResourceFactory objectLoaderResourceFactory = new ObjectLoaderResourceFactory() {
-			
-			@Override
-			protected ObjectLoader getObjectLoader(Resource resource) {
-				return eObjectLoader;
-			}
-			
-			@Override
-			protected Context getContext(Resource resource) {
-				return context;
-			}
-			
-			@Override
-			protected ProgressMonitor getProgressMonitor(Resource resource) {
-				return progressMonitor;
-			}
-			
-		};
-		
-		extensionToFactoryMap.put("yml", objectLoaderResourceFactory);
-		extensionToFactoryMap.put("json", objectLoaderResourceFactory);		
-		resourceSet.getResourceFactoryRegistry().getProtocolToFactoryMap().put("data", objectLoaderResourceFactory);
+		ResourceSet resourceSet = Util.createResourceSet(progressMonitor);
 		
 		Consumer<Diagnostic> diagnosticConsumer = diagnostic -> {
 			if (diagnostic.getStatus() != Status.SUCCESS) {
@@ -145,7 +95,7 @@ public class DrawioFlowActionsGenerator {
 			@Override
 			protected Action createDocumentAction(org.nasdanika.drawio.Document document) {
 				String actionsResource = "model/root-action.yml";
-				Action root = (Action) Objects.requireNonNull(loadObject(actionsResource, diagnosticConsumer, context, progressMonitor), "Loaded null from " + actionsResource);
+				Action root = (Action) Objects.requireNonNull(AppGenObjectLoaderSupplier.loadObject(actionsResource, diagnosticConsumer, context, progressMonitor), "Loaded null from " + actionsResource);
 				
 				return EcoreUtil.copy(root);
 			}
@@ -166,20 +116,20 @@ public class DrawioFlowActionsGenerator {
 		Action root = (Action) modelResource.getContents().get(0);
 		
 		String searchActionResource = "model/search-action.yml";
-		Action searchAction = (Action) Objects.requireNonNull(loadObject(searchActionResource, diagnosticConsumer, context, progressMonitor), "Loaded null from " + searchActionResource);
+		Action searchAction = (Action) Objects.requireNonNull(AppGenObjectLoaderSupplier.loadObject(searchActionResource, diagnosticConsumer, context, progressMonitor), "Loaded null from " + searchActionResource);
 		root.getChildren().add(searchAction);
 		
 		Container container = ResourcesFactory.eINSTANCE.createContainer();
 		container.setName(name);
 		
-		ResourceSet containerResourceSet = createResourceSet(context, progressMonitor);
+		ResourceSet containerResourceSet = Util.createResourceSet(progressMonitor);
 		containerResourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put(Resource.Factory.Registry.DEFAULT_EXTENSION, new XMIResourceFactoryImpl());
 		URI containerModelUri = URI.createFileURI(new File(RESOURCE_MODELS_DIR, name + ".xml").getAbsolutePath());				
 		Resource containerResource = containerResourceSet.createResource(containerModelUri);
 		containerResource.getContents().add(container);
 		
 		String pageTemplateResource = "model/page-template.yml";
-		org.nasdanika.html.model.bootstrap.Page pageTemplate = (org.nasdanika.html.model.bootstrap.Page) Objects.requireNonNull(loadObject(pageTemplateResource, diagnosticConsumer, context, progressMonitor), "Loaded null from " + pageTemplateResource);
+		org.nasdanika.html.model.bootstrap.Page pageTemplate = (org.nasdanika.html.model.bootstrap.Page) Objects.requireNonNull(AppGenObjectLoaderSupplier.loadObject(pageTemplateResource, diagnosticConsumer, context, progressMonitor), "Loaded null from " + pageTemplateResource);
 		
 		containerResource.save(null);		
 		File contentDir = new File(RESOURCE_MODELS_DIR, "content");
@@ -355,69 +305,13 @@ public class DrawioFlowActionsGenerator {
 			throw new NasdanikaException(e);
 		}
 	}
-	
-	private static EObject loadObject(
-			String resource, 
-			java.util.function.Consumer<org.nasdanika.common.Diagnostic> diagnosticConsumer,
-			Context context,
-			ProgressMonitor progressMonitor) {
-		
-		URI resourceURI = URI.createFileURI(new File(resource).getAbsolutePath());
-
-		// Diagnosing loaded resources. 
-		try {
-			return Objects.requireNonNull(org.nasdanika.common.Util.call(new AppGenObjectLoaderSupplier(resourceURI, context), progressMonitor, diagnosticConsumer), "Loaded null from: " + resource);
-		} catch (DiagnosticException e) {
-			System.err.println("******************************");
-			System.err.println("*      Diagnostic failed     *");
-			System.err.println("******************************");
-			e.getDiagnostic().dump(System.err, 4, Status.FAIL);
-			throw e;
-		}		
-	}
-	
-	private static ResourceSet createResourceSet(Context context, ProgressMonitor progressMonitor) {
-		// Load model from XMI
-		ResourceSet resourceSet = new NcoreResourceSet();
-		
-		EObjectLoader eObjectLoader = new EObjectLoader(null, null, resourceSet);
-		GitMarkerFactory markerFactory = new GitMarkerFactory();
-		eObjectLoader.setMarkerFactory(markerFactory);
-		
-		Resource.Factory objectLoaderResourceFactory = new ObjectLoaderResourceFactory() {
-			
-			@Override
-			protected org.nasdanika.persistence.ObjectLoader getObjectLoader(Resource resource) {
-				return eObjectLoader;
-			}
-			
-		};
-		Map<String, Object> extensionToFactoryMap = resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap();
-		extensionToFactoryMap.put("yml", objectLoaderResourceFactory);
-		extensionToFactoryMap.put("json", objectLoaderResourceFactory);
-		resourceSet.getResourceFactoryRegistry().getProtocolToFactoryMap().put("data", objectLoaderResourceFactory);
-		
-		extensionToFactoryMap.put(Resource.Factory.Registry.DEFAULT_EXTENSION, new XMIResourceFactoryImpl());
-	
-		resourceSet.getPackageRegistry().put(NcorePackage.eNS_URI, NcorePackage.eINSTANCE);
-		resourceSet.getPackageRegistry().put(ExecPackage.eNS_URI, ExecPackage.eINSTANCE);
-		resourceSet.getPackageRegistry().put(ContentPackage.eNS_URI, ContentPackage.eINSTANCE);
-		resourceSet.getPackageRegistry().put(ResourcesPackage.eNS_URI, ResourcesPackage.eINSTANCE);
-		resourceSet.getPackageRegistry().put(HtmlPackage.eNS_URI, HtmlPackage.eINSTANCE);
-		resourceSet.getPackageRegistry().put(BootstrapPackage.eNS_URI, BootstrapPackage.eINSTANCE);
-		resourceSet.getPackageRegistry().put(AppPackage.eNS_URI, AppPackage.eINSTANCE);
-		
-		resourceSet.getAdapterFactories().add(new AppAdapterFactory());
-		
-		return resourceSet;
-	}
 		
 	/**
 	 * Generates files from the previously generated resource model.
 	 * @throws Exception
 	 */
 	public void generateContainer(String name, Context context, ProgressMonitor progressMonitor) throws Exception {
-		ResourceSet resourceSet = createResourceSet(context, progressMonitor);
+		ResourceSet resourceSet = Util.createResourceSet(progressMonitor);
 		
 		resourceSet.getAdapterFactories().add(new AppAdapterFactory());
 				
@@ -460,143 +354,32 @@ public class DrawioFlowActionsGenerator {
 		};
 
 		File docsDir = new File("docs");
-		copy(new File(siteDir, name + "\\flow"), docsDir, true, cleanPredicate, null);
+		org.nasdanika.common.Util.copy(new File(siteDir, name + "\\flow"), docsDir, true, cleanPredicate, null);
 		
 		generateSitemapAndSearch(docsDir);
 	}
 	
-	private static void delete(String path, Predicate<String> deletePredicate, File... files) {
-		for (File file: files) {
-			String filePath = path == null ? file.getName() : path + "/" + file.getName();
-			if (file.exists() && (deletePredicate == null || deletePredicate.test(filePath))) {
-				if (file.isDirectory()) {
-					delete(filePath, deletePredicate, file.listFiles());
-				}
-				file.delete();
-			}
-		}
-	}	
+	private void generateSitemapAndSearch(File docsDir) throws IOException {
+		int[] problems = { 0 };
 		
-	private static void copy(File source, File target, boolean cleanTarget, Predicate<String> cleanPredicate, BiConsumer<File,File> listener) throws IOException {
-		if (cleanTarget && target.isDirectory()) {
-			delete(null, cleanPredicate, target.listFiles());
-		}
-		if (source.isDirectory()) {
-			target.mkdirs();
-			for (File sc: source.listFiles()) {
-				copy(sc, new File(target, sc.getName()), false, listener);
-			}
-		} else if (source.isFile()) {
-			Files.copy(source.toPath(), target.toPath(), StandardCopyOption.REPLACE_EXISTING);			
-			if (listener != null) {
-				listener.accept(source, target);
-			}
-		}
-	}
-	
-	private static void copy(File source, File target, boolean cleanTarget, BiConsumer<File,File> listener) throws IOException {
-		if (cleanTarget && target.isDirectory()) {
-			delete(target.listFiles());
-		}
-		if (source.isDirectory()) {
-			target.mkdirs();
-			for (File sc: source.listFiles()) {
-				copy(sc, new File(target, sc.getName()), false, listener);
-			}
-		} else if (source.isFile()) {
-			Files.copy(source.toPath(), target.toPath(), StandardCopyOption.REPLACE_EXISTING);			
-			if (listener != null) {
-				listener.accept(source, target);
-			}
-		}
-	}
-
-	/**
-	 * 
-	 * @param siteDir
-	 * @return Number of broken links.
-	 * @throws IOException
-	 */
-	private void generateSitemapAndSearch(File siteDir) throws IOException {
-		AtomicInteger problems = new AtomicInteger();
+		Util.generateSitemapAndSearch(
+				docsDir, 
+				"https://docs.nasdanika.org/demo-drawio-flow-actions", 
+				(file, path) -> path.endsWith(".html"), 
+				ChangeFreq.WEEKLY, 
+				(file, path) -> path.endsWith(".html") && !"search.html".equals(path), 
+				(path, error) -> {
+					System.err.println("[" + path +"] " + error);
+					++problems[0];
+				});
 		
-		// Site map and search index
-		JSONObject searchDocuments = new JSONObject();		
-		String baseURL = "https://docs.nasdanika.org/demo-drawio-actions";
-		WebSitemapGenerator wsg = new WebSitemapGenerator(baseURL, siteDir);
-		BiConsumer<File, String> listener = new BiConsumer<File, String>() {
-			
-			@Override
-			public void accept(File file, String path) {
-				if (path.endsWith(".html")) {
-					try {
-						WebSitemapUrl url = new WebSitemapUrl.Options(baseURL + "/" + path)
-							    .lastMod(new Date(file.lastModified())).changeFreq(ChangeFreq.WEEKLY).build();
-						wsg.addUrl(url); 
-					} catch (MalformedURLException e) {
-						throw new NasdanikaException(e);
-					}
-					
-					// Excluding search.html and aggregator pages which contain information present elsewhere
-					try {	
-						Predicate<String> predicate = org.nasdanika.html.model.app.gen.Util.createRelativeLinkPredicate(file, siteDir);						
-						Consumer<? super Element> inspector = org.nasdanika.html.model.app.gen.Util.createInspector(predicate, error -> {
-							System.err.println("[" + path +"] " + error);
-							problems.incrementAndGet();
-						});
-						JSONObject searchDocument = org.nasdanika.html.model.app.gen.Util.createSearchDocument(path, file, inspector, DrawioFlowActionsGenerator.this::configureSearch);
-						if (searchDocument != null) {
-							searchDocuments.put(path, searchDocument);
-						}
-					} catch (IOException e) {
-						throw new NasdanikaException(e);
-					}
-				}
-			}
-		};
-		org.nasdanika.common.Util.walk(null, listener, siteDir.listFiles());
-		wsg.write();	
-
-		try (FileWriter writer = new FileWriter(new File(siteDir, "search-documents.js"))) {
-			writer.write("var searchDocuments = " + searchDocuments);
-		}
-		
-		if (problems.get() > 0) {
-			throw new NasdanikaException("There are broken links: " + problems.get());
+		if (problems[0] != 0) {
+			throw new ExecutionException("There are problems with pages: " + problems[0]);
 		};
 	}
-		
-	protected boolean configureSearch(String path, Document doc) {
-		Element head = doc.head();
-		URI base = URI.createURI("temp://" + UUID.randomUUID() + "/");
-		URI searchScriptURI = URI.createURI("search-documents.js").resolve(base);
-		URI thisURI = URI.createURI(path).resolve(base);
-		URI relativeSearchScriptURI = searchScriptURI.deresolve(thisURI, true, true, true);
-		head.append(System.lineSeparator() + "<script src=\"" + relativeSearchScriptURI + "\"></script>" + System.lineSeparator());
-		head.append(System.lineSeparator() + "<script src=\"https://unpkg.com/lunr/lunr.js\"></script>" + System.lineSeparator());
-				
-		try (InputStream in = new FileInputStream("model/search.js")) {
-			head.append(System.lineSeparator() + "<script>" + System.lineSeparator() + DefaultConverter.INSTANCE.toString(in) + System.lineSeparator() + "</script>" + System.lineSeparator());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		return true;
-	}	
-		
-	private static void delete(File... files) {
-		for (File file: files) {
-			if (file.exists()) {
-				if (file.isDirectory()) {
-					delete(file.listFiles());
-				}
-				file.delete();
-			}
-		}
-	}	
 	
 	public void generate() throws Exception {
-		delete(new File("docs").listFiles());
+		org.nasdanika.common.Util.delete(new File("docs").listFiles());
 		ProgressMonitor progressMonitor = new NullProgressMonitor(); // PrintStreamProgressMonitor();		
 		MutableContext context = Context.EMPTY_CONTEXT.fork();
 		
