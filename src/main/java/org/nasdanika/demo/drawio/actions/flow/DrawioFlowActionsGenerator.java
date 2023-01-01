@@ -27,11 +27,9 @@ import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
-import org.eclipse.emf.ecore.util.Diagnostician;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.json.JSONObject;
-import org.nasdanika.common.ConsumerFactory;
 import org.nasdanika.common.Context;
 import org.nasdanika.common.Diagnostic;
 import org.nasdanika.common.DiagnosticException;
@@ -43,7 +41,6 @@ import org.nasdanika.common.ProgressMonitor;
 import org.nasdanika.common.Status;
 import org.nasdanika.common.SupplierFactory;
 import org.nasdanika.drawio.ConnectionBase;
-import org.nasdanika.emf.EObjectAdaptable;
 import org.nasdanika.exec.content.ContentFactory;
 import org.nasdanika.exec.resources.Container;
 import org.nasdanika.exec.resources.ResourcesFactory;
@@ -62,7 +59,6 @@ import org.nasdanika.html.model.app.gen.LinkJsTreeNodeSupplierFactoryAdapter;
 import org.nasdanika.html.model.app.gen.NavigationPanelConsumerFactoryAdapter;
 import org.nasdanika.html.model.app.gen.PageContentProvider;
 import org.nasdanika.html.model.app.gen.Util;
-import org.nasdanika.resources.BinaryEntityContainer;
 import org.nasdanika.resources.FileSystemContainer;
 
 import com.redfin.sitemapgenerator.ChangeFreq;
@@ -311,42 +307,13 @@ public class DrawioFlowActionsGenerator {
 	 * @throws Exception
 	 */
 	public void generateContainer(String name, Context context, ProgressMonitor progressMonitor) throws Exception {
-		ResourceSet resourceSet = Util.createResourceSet(progressMonitor);
-		
-		resourceSet.getAdapterFactories().add(new AppAdapterFactory());
-				
-		URI containerModelUri = URI.createFileURI(new File(RESOURCE_MODELS_DIR, name + ".xml").getAbsolutePath());				
-		Resource containerResource = resourceSet.getResource(containerModelUri, true);
-	
 		File siteDir = new File(GENERATED_MODELS_BASE_DIR, "site");
-		BinaryEntityContainer container = new FileSystemContainer(siteDir);
-		for (EObject eObject : containerResource.getContents()) {
-			Diagnostician diagnostician = new Diagnostician();
-			org.eclipse.emf.common.util.Diagnostic diagnostic = diagnostician.validate(eObject);
-			if (org.eclipse.emf.common.util.Diagnostic.ERROR == diagnostic.getSeverity()) {
-				throw new org.eclipse.emf.common.util.DiagnosticException(diagnostic);
-			}
-			// Diagnosing loaded resources. 
-			try {
-				ConsumerFactory<BinaryEntityContainer> consumerFactory = Objects.requireNonNull(EObjectAdaptable.adaptToConsumerFactory(eObject, BinaryEntityContainer.class), "Cannot adapt to ConsumerFactory");
-				Diagnostic callDiagnostic = org.nasdanika.common.Util.call(consumerFactory.create(context), container, progressMonitor);
-				if (callDiagnostic.getStatus() == Status.FAIL || callDiagnostic.getStatus() == Status.ERROR) {
-					System.err.println("***********************");
-					System.err.println("*      Diagnostic     *");
-					System.err.println("***********************");
-					callDiagnostic.dump(System.err, 4, Status.FAIL, Status.ERROR);
-				}
-				if (Status.SUCCESS != callDiagnostic.getStatus()) {
-					throw new DiagnosticException(callDiagnostic);
-				}
-			} catch (DiagnosticException e) {
-				System.err.println("******************************");
-				System.err.println("*      Diagnostic failed     *");
-				System.err.println("******************************");
-				e.getDiagnostic().dump(System.err, 4, Status.FAIL);
-				throw e;
-			}
-		}
+		
+		Util.generateContainer(
+				URI.createFileURI(new File(RESOURCE_MODELS_DIR, name + ".xml").getAbsolutePath()), 
+				new FileSystemContainer(siteDir), 
+				context, 
+				progressMonitor);
 		
 		// Cleanup docs, keep CNAME, favicon.ico, and images directory. Copy from target/model-doc/site/docs
 		Predicate<String> cleanPredicate = path -> {
@@ -356,10 +323,6 @@ public class DrawioFlowActionsGenerator {
 		File docsDir = new File("docs");
 		org.nasdanika.common.Util.copy(new File(siteDir, name + "\\flow"), docsDir, true, cleanPredicate, null);
 		
-		generateSitemapAndSearch(docsDir);
-	}
-	
-	private void generateSitemapAndSearch(File docsDir) throws IOException {
 		int[] problems = { 0 };
 		
 		Util.generateSitemapAndSearch(
