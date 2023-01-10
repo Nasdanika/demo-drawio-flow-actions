@@ -78,7 +78,7 @@ public class DrawioFlowActionsGenerator {
 	 * @throws Exception
 	 */
 	private void generateResourceModel(String name, Context context, ProgressMonitor progressMonitor) throws Exception {
-		ResourceSet resourceSet = Util.createResourceSet(progressMonitor);
+		ResourceSet resourceSet = Util.createResourceSet(context, progressMonitor);
 		
 		Consumer<Diagnostic> diagnosticConsumer = diagnostic -> {
 			if (diagnostic.getStatus() != Status.SUCCESS) {
@@ -118,7 +118,7 @@ public class DrawioFlowActionsGenerator {
 		Container container = ResourcesFactory.eINSTANCE.createContainer();
 		container.setName(name);
 		
-		ResourceSet containerResourceSet = Util.createResourceSet(progressMonitor);
+		ResourceSet containerResourceSet = Util.createResourceSet(context, progressMonitor);
 		containerResourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put(Resource.Factory.Registry.DEFAULT_EXTENSION, new XMIResourceFactoryImpl());
 		URI containerModelUri = URI.createFileURI(new File(RESOURCE_MODELS_DIR, name + ".xml").getAbsolutePath());				
 		Resource containerResource = containerResourceSet.createResource(containerModelUri);
@@ -240,7 +240,7 @@ public class DrawioFlowActionsGenerator {
 				org.nasdanika.exec.content.Resource pageResource = ContentFactory.eINSTANCE.createResource();
 				pageResource.setLocation("pages/" + page.getUuid() + ".html");
 				System.out.println("[Page content] " + page.getName() + " -> " + pageResource.getLocation());
-				return pageResource;
+				return ECollections.singletonEList(pageResource);
 			} catch (IOException e) {
 				throw new NasdanikaException(e);
 			}
