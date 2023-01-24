@@ -5,4 +5,4 @@ app-action:
   content:
     content-interpolator:
       source:
-        content-resource: search.html
+        content-resource: classpath://org/nasdanika/html/model/app/gen/search.html
