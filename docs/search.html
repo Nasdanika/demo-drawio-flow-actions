@@ -1,20 +1,20 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="EN">
   <head>
     <title>Search</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.5.2/cosmo/bootstrap.min.css" id="nsd-bootstrap-theme-stylesheet">
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.5.2/cosmo/bootstrap.min.css" id="nsd-bootstrap-theme-stylesheet"/>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.min.js"></script>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Nasdanika/html@master/model/app.gen/web-resources/css/app.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jstree@3.3.11/dist/themes/default/style.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.3.1/build/styles/default.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-vue@2.21.2/dist/bootstrap-vue.css">
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Nasdanika/html@master/model/app.gen/web-resources/css/app.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jstree@3.3.11/dist/themes/default/style.min.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.3.1/build/styles/default.min.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-vue@2.21.2/dist/bootstrap-vue.css"/>
     <script src="https://cdn.jsdelivr.net/gh/Nasdanika/html@master/model/app.gen/web-resources/js/common.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/Nasdanika/html@master/model/app.gen/web-resources/js/dark-head.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jstree@3.3.11/dist/jstree.min.js"></script>
@@ -31,52 +31,15 @@
 
   gtag('config', 'G-9BRJVLK8CC');
 </script>    
-
-<script src="search-documents.js"></script>
-
-<script src="https://unpkg.com/lunr/lunr.js"></script>
-
-<script>
-// Script for full-text search of JsTree
-
-window.nsdJsTreeSearchCallback = function(str, node) { 
-    var sf = new $.vakata.search(str, true, { caseSensitive : false, fuzzy : false }); 
-    if (sf.search(node.text).isMatch) {
-		return true;
-	} 
-    let searchResult = this.search(str); 
-    for (const sr in searchResult) {
-        if (searchResult[sr].ref === node.original['data-nsd-action-uuid']) {
-            return true;
-        } 
-    } 
-    return false; 
-}.bind(lunr(function () {
-			  this.ref('id');
-			  this.field('title');
-			  this.field('content');
-
-			  for (const key in searchDocuments) {
-				  let doc = searchDocuments[key];
-				this.add({
-					id: doc['action-uuid'],
-					title: doc.title,
-					path: doc.path,
-					content: doc.content
-				});  
-			  }
-			}));
-</script>
 </head>
   <body>
     <div class="container-fluid nsd-app-container">
       <div class="row">
         <div class="col nsd-app-header">
-          <a href="https://www.nasdanika.org" title="Root action" data-nsd-action-uuid="a620f4b5-8b32-412c-a158-34238f9544ca" class="nsd-app-header-title">
-            <img src="https://docs.nasdanika.org/images/nasdanika-logo.png" class="nsd-app-label-icon">Nasdanika</a>
+          <a href="https://www.nasdanika.org" title="Root action" data-nsd-label-uuid="6d6629ca-05a7-421c-99be-18232efa3150" class="nsd-app-header-title">
+            <img src="https://docs.nasdanika.org/images/nasdanika-logo.png" class="nsd-app-label-icon"/>Nasdanika</a>
           <ul class="nav nsd-app-header-navs">
-            <li class="nav-item">
-              <a href="${base-uri}flow/search.html" data-nsd-action-uuid="1fa186d6-309e-4f98-ba67-3d813fdeb38d" class="nav-link"><span class="fas fa-search nsd-app-label-icon"></span>Search</a>
+            <li class="nav-item"><span data-nsd-label-uuid="92591250-51ec-4b6c-8a4d-acadcab78803" class="navbar-text"><span class="fas fa-search nsd-app-label-icon"></span>Search</span>
             </li>
           </ul>
         </div>
@@ -84,25 +47,25 @@ window.nsdJsTreeSearchCallback = function(str, node) {
       <div class="row">
         <div class="col nsd-app-navbar">
           <ul class="navbar navbar-light navbar-expand-lg">
-            <a href="index.html" data-nsd-action-uuid="bf5e22f0-f769-4dc3-bb79-88bddac7de48" class="navbar-brand">Process A</a>
-            <button type="button" data-toggle="collapse" data-target="#nsd_l" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler"><span class="navbar-toggler-icon"></span>
+            <a href="index.html" data-nsd-label-uuid="65e620ab-95f2-4c95-a4b2-caf260fff060" class="navbar-brand">Process A</a>
+            <button type="button" data-toggle="collapse" data-target="#nsd_15" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler"><span class="navbar-toggler-icon"></span>
             </button>
-            <div id="nsd_l" class="collapse navbar-collapse"></div>
+            <div id="nsd_15" class="collapse navbar-collapse"></div>
           </ul>
         </div>
       </div>
       <div class="row nsd-app-content-row">
         <div class="col nsd-app-navigation-panel">
-          <input type="text" id="2b4e8129b02d487f-1-navigation-panel_searchInput" title="Full-text search. You can use wildcards, e.g. 'foo*' or 'f*o'; title or content fields, e.g. 'title:foo* bar'; boosts, e.g. 'foo^10 bar'; fuzzy matches, e.g. 'foo~1'; and term presence, e.g. '+foo bar -baz'" class="form-control mt-1">
+          <input type="text" id="2b4e8129b02d487f-1-navigation-panel_searchInput" title="Full-text search. You can use wildcards, e.g. 'foo*' or 'f*o'; title or content fields, e.g. 'title:foo* bar'; boosts, e.g. 'foo^10 bar'; fuzzy matches, e.g. 'foo~1'; and term presence, e.g. '+foo bar -baz'" class="form-control mt-1"/>
           <div id="2b4e8129b02d487f-1-navigation-panel"></div>
           <script>$(document).ready( function() {
-$('#2b4e8129b02d487f-1-navigation-panel').jstree(function(tree) { tree.state.filter = function(state) { delete state.core.selected; return state; };  tree.search.search_callback = function(searchStr, node) { if (typeof window.nsdJsTreeSearchCallback === 'function') return window.nsdJsTreeSearchCallback(searchStr, node); var sf = new $.vakata.search(searchStr, true, { caseSensitive : false, fuzzy : false }); return sf.search(node.text).isMatch; }; return tree; }({"core":{"data":[{"a_attr":{"onclick":"window.location='children/2b4e8129b02d487f-2/index.html';"},"children":[{"a_attr":{"onclick":"window.location='children/2b4e8129b02d487f-2/children/2b4e8129b02d487f-6/index.html';"},"id":"nsd-app-nav-item-2b4e8129b02d487f-6","text":"Activity 1","data-nsd-action-uuid":"f4e8c44b-b9b8-40ac-9553-e23c90e3e92b","type":"leaf"},{"a_attr":{"onclick":"window.location='children/2b4e8129b02d487f-2/children/2b4e8129b02d487f-7/index.html';"},"children":[{"a_attr":{"onclick":"window.location='children/2b4e8129b02d487f-2/children/2b4e8129b02d487f-7/children/nyDErOf45Nq0Kb2UPtJH-1/index.html';"},"id":"nsd-app-nav-item-nyDErOf45Nq0Kb2UPtJH-1","text":"Step 3.1","data-nsd-action-uuid":"9f8b3cea-9e6f-412f-b0ae-806db7db911b","type":"leaf"},{"a_attr":{"onclick":"window.location='children/2b4e8129b02d487f-2/children/2b4e8129b02d487f-7/children/nyDErOf45Nq0Kb2UPtJH-3/index.html';"},"id":"nsd-app-nav-item-nyDErOf45Nq0Kb2UPtJH-3","text":"Step 3.2","data-nsd-action-uuid":"9af74a1b-fe13-484b-b0ce-46f3aa3002e3","type":"leaf"},{"a_attr":{"onclick":"window.location='children/2b4e8129b02d487f-2/children/2b4e8129b02d487f-7/children/nyDErOf45Nq0Kb2UPtJH-2/index.html';"},"id":"nsd-app-nav-item-nyDErOf45Nq0Kb2UPtJH-2","text":"Step 3.3","data-nsd-action-uuid":"65392d1e-37b4-4505-b12a-07983c8021c3","type":"leaf"}],"id":"nsd-app-nav-item-2b4e8129b02d487f-7","text":"Activity 3","data-nsd-action-uuid":"caf3d223-ded5-400d-bae0-f9b5950a1c75"},{"a_attr":{"onclick":"window.location='children/2b4e8129b02d487f-2/children/2b4e8129b02d487f-9/index.html';"},"id":"nsd-app-nav-item-2b4e8129b02d487f-9","text":"Activity 6","data-nsd-action-uuid":"85812978-5f10-4fcd-a33e-a9b702a7cb93","type":"leaf"},{"a_attr":{"onclick":"window.location='children/2b4e8129b02d487f-2/children/2b4e8129b02d487f-11/index.html';"},"id":"nsd-app-nav-item-2b4e8129b02d487f-11","text":"End","data-nsd-action-uuid":"10cc9b21-1b51-440a-8645-41584214edba","type":"leaf"},{"a_attr":{"onclick":"window.location='children/2b4e8129b02d487f-2/children/2b4e8129b02d487f-10/index.html';"},"id":"nsd-app-nav-item-2b4e8129b02d487f-10","text":"Merge","data-nsd-action-uuid":"377c77a3-5a02-47d0-8d25-7896fd4e95a5","type":"leaf"},{"a_attr":{"onclick":"window.location='children/2b4e8129b02d487f-2/children/2b4e8129b02d487f-5/index.html';"},"id":"nsd-app-nav-item-2b4e8129b02d487f-5","text":"Start","data-nsd-action-uuid":"d9458e21-6fa5-4bbd-929b-ec71a34624a5","type":"leaf"}],"id":"nsd-app-nav-item-2b4e8129b02d487f-2","text":"Team 1","data-nsd-action-uuid":"c6eeabbb-b98c-43ac-9dd5-5e2345e94bab"},{"a_attr":{"onclick":"window.location='children/2b4e8129b02d487f-3/index.html';"},"children":[{"a_attr":{"onclick":"window.location='children/2b4e8129b02d487f-3/children/2b4e8129b02d487f-12/index.html';"},"id":"nsd-app-nav-item-2b4e8129b02d487f-12","text":"Activity 2","data-nsd-action-uuid":"250d4244-bc1a-4dfa-a22a-859a1ed9f672","type":"leaf"},{"a_attr":{"onclick":"window.location='children/2b4e8129b02d487f-3/children/2b4e8129b02d487f-13/index.html';"},"id":"nsd-app-nav-item-2b4e8129b02d487f-13","text":"Decision A","data-nsd-action-uuid":"2c9dc7c7-11ab-4736-9bf0-76f2933c06c4","type":"leaf"}],"id":"nsd-app-nav-item-2b4e8129b02d487f-3","text":"Team 2","data-nsd-action-uuid":"5828fca9-2458-4498-98d3-d0492b37fb41"},{"a_attr":{"onclick":"window.location='children/2b4e8129b02d487f-4/index.html';"},"children":[{"a_attr":{"onclick":"window.location='children/2b4e8129b02d487f-4/children/2b4e8129b02d487f-14/index.html';"},"id":"nsd-app-nav-item-2b4e8129b02d487f-14","text":"Activity 4","data-nsd-action-uuid":"27dc2d2f-6d45-4d5b-822c-042913b687c9","type":"leaf"},{"a_attr":{"onclick":"window.location='children/2b4e8129b02d487f-4/children/2b4e8129b02d487f-17/index.html';"},"id":"nsd-app-nav-item-2b4e8129b02d487f-17","text":"Activity 7","data-nsd-action-uuid":"65b48266-2a50-4d87-95d0-20866bb30df1","type":"leaf"},{"a_attr":{"onclick":"window.location='children/2b4e8129b02d487f-4/children/2b4e8129b02d487f-15/index.html';"},"id":"nsd-app-nav-item-2b4e8129b02d487f-15","text":"Decision B","data-nsd-action-uuid":"dd77230d-eb1a-4c4f-be41-947f3aa2049c","type":"leaf"},{"a_attr":{"onclick":"window.location='children/2b4e8129b02d487f-4/children/2b4e8129b02d487f-16/index.html';"},"id":"nsd-app-nav-item-2b4e8129b02d487f-16","text":"Split","data-nsd-action-uuid":"d16ff51e-ddb9-41e4-a430-a824cbaf3be5","type":"leaf"}],"id":"nsd-app-nav-item-2b4e8129b02d487f-4","text":"Team 3","data-nsd-action-uuid":"fd6cfa0d-fdcf-43d5-9eea-32d1ac63d829"}]},"search":{"show_only_matches":true,"show_only_matches_children":true},"types":{"leaf":{"icon":"jstree-file"}},"plugins":["state","type","search"],"state":{"key":"2b4e8129b02d487f-1-navigation-panel"}}));
+$('#2b4e8129b02d487f-1-navigation-panel').jstree(function(tree) { tree.state.filter = function(state) { delete state.core.selected; return state; };  tree.search.search_callback = function(searchStr, node) { if (typeof window.nsdJsTreeSearchCallback === 'function') return window.nsdJsTreeSearchCallback(searchStr, node); var sf = new $.vakata.search(searchStr, true, { caseSensitive : false, fuzzy : false }); return sf.search(node.text).isMatch; }; return tree; }({"core":{"data":[{"a_attr":{"onclick":"window.location='children/2b4e8129b02d487f-2/index.html';"},"children":[{"a_attr":{"onclick":"window.location='children/2b4e8129b02d487f-2/children/2b4e8129b02d487f-6/index.html';"},"data-nsd-label-uuid":"15121fd6-3e8b-4d42-95a2-f9ee86b4f7b5","id":"nsd-app-nav-item-2b4e8129b02d487f-6","text":"Activity 1","type":"leaf"},{"a_attr":{"onclick":"window.location='children/2b4e8129b02d487f-2/children/2b4e8129b02d487f-7/index.html';"},"children":[{"a_attr":{"onclick":"window.location='children/2b4e8129b02d487f-2/children/2b4e8129b02d487f-7/children/nyDErOf45Nq0Kb2UPtJH-1/index.html';"},"data-nsd-label-uuid":"d7a35842-5fed-4fbf-ae75-514f5dcf45cd","id":"nsd-app-nav-item-nyDErOf45Nq0Kb2UPtJH-1","text":"Step 3.1","type":"leaf"},{"a_attr":{"onclick":"window.location='children/2b4e8129b02d487f-2/children/2b4e8129b02d487f-7/children/nyDErOf45Nq0Kb2UPtJH-3/index.html';"},"data-nsd-label-uuid":"40fb40e4-6d0a-4618-afc7-df0d9247b131","id":"nsd-app-nav-item-nyDErOf45Nq0Kb2UPtJH-3","text":"Step 3.2","type":"leaf"},{"a_attr":{"onclick":"window.location='children/2b4e8129b02d487f-2/children/2b4e8129b02d487f-7/children/nyDErOf45Nq0Kb2UPtJH-2/index.html';"},"data-nsd-label-uuid":"72409dfc-e23a-47f4-b8d7-edffa19e0e3e","id":"nsd-app-nav-item-nyDErOf45Nq0Kb2UPtJH-2","text":"Step 3.3","type":"leaf"}],"data-nsd-label-uuid":"9bf333f3-1967-4c4b-8c9a-8ad653c347e6","id":"nsd-app-nav-item-2b4e8129b02d487f-7","text":"Activity 3"},{"a_attr":{"onclick":"window.location='children/2b4e8129b02d487f-2/children/2b4e8129b02d487f-9/index.html';"},"data-nsd-label-uuid":"8fdc40ce-cd4c-4a81-afe5-94a0e904f8dc","id":"nsd-app-nav-item-2b4e8129b02d487f-9","text":"Activity 6","type":"leaf"},{"a_attr":{"onclick":"window.location='children/2b4e8129b02d487f-2/children/2b4e8129b02d487f-11/index.html';"},"data-nsd-label-uuid":"aa3a6f2b-ae40-4c8e-945e-bf94b4685555","id":"nsd-app-nav-item-2b4e8129b02d487f-11","text":"End","type":"leaf"},{"a_attr":{"onclick":"window.location='children/2b4e8129b02d487f-2/children/2b4e8129b02d487f-10/index.html';"},"data-nsd-label-uuid":"45c245c0-a9dc-4838-a9d5-3ea1827afadf","id":"nsd-app-nav-item-2b4e8129b02d487f-10","text":"Merge","type":"leaf"},{"a_attr":{"onclick":"window.location='children/2b4e8129b02d487f-2/children/2b4e8129b02d487f-5/index.html';"},"data-nsd-label-uuid":"3fa7b7fc-318a-40ad-8205-7fa2e64950e7","id":"nsd-app-nav-item-2b4e8129b02d487f-5","text":"Start","type":"leaf"}],"data-nsd-label-uuid":"53c5224b-df26-4e01-82a2-557f5c952bd9","id":"nsd-app-nav-item-2b4e8129b02d487f-2","text":"Team 1"},{"a_attr":{"onclick":"window.location='children/2b4e8129b02d487f-3/index.html';"},"children":[{"a_attr":{"onclick":"window.location='children/2b4e8129b02d487f-3/children/2b4e8129b02d487f-12/index.html';"},"data-nsd-label-uuid":"0ea82b9d-8e11-4847-a3bb-c518d664b10f","id":"nsd-app-nav-item-2b4e8129b02d487f-12","text":"Activity 2","type":"leaf"},{"a_attr":{"onclick":"window.location='children/2b4e8129b02d487f-3/children/2b4e8129b02d487f-13/index.html';"},"data-nsd-label-uuid":"1d85395f-836c-46fa-90cc-124ad9e6327f","id":"nsd-app-nav-item-2b4e8129b02d487f-13","text":"Decision A","type":"leaf"}],"data-nsd-label-uuid":"d8446955-c57f-42b0-84ae-f939bf9ca8db","id":"nsd-app-nav-item-2b4e8129b02d487f-3","text":"Team 2"},{"a_attr":{"onclick":"window.location='children/2b4e8129b02d487f-4/index.html';"},"children":[{"a_attr":{"onclick":"window.location='children/2b4e8129b02d487f-4/children/2b4e8129b02d487f-14/index.html';"},"data-nsd-label-uuid":"7f848353-357f-427c-8a42-c684593a7986","id":"nsd-app-nav-item-2b4e8129b02d487f-14","text":"Activity 4","type":"leaf"},{"a_attr":{"onclick":"window.location='children/2b4e8129b02d487f-4/children/2b4e8129b02d487f-17/index.html';"},"data-nsd-label-uuid":"791a6ec4-bafc-4c46-86fc-6e465bcadfcc","id":"nsd-app-nav-item-2b4e8129b02d487f-17","text":"Activity 7","type":"leaf"},{"a_attr":{"onclick":"window.location='children/2b4e8129b02d487f-4/children/2b4e8129b02d487f-15/index.html';"},"data-nsd-label-uuid":"95c36d4c-3d5a-45bf-80bc-a74fc4ac72cb","id":"nsd-app-nav-item-2b4e8129b02d487f-15","text":"Decision B","type":"leaf"},{"a_attr":{"onclick":"window.location='children/2b4e8129b02d487f-4/children/2b4e8129b02d487f-16/index.html';"},"data-nsd-label-uuid":"7aa22ea6-9e0a-4781-88cb-d18fc24fa103","id":"nsd-app-nav-item-2b4e8129b02d487f-16","text":"Split","type":"leaf"}],"data-nsd-label-uuid":"2749ff36-4f5d-4770-96dc-0d7e449964b1","id":"nsd-app-nav-item-2b4e8129b02d487f-4","text":"Team 3"}]},"search":{"show_only_matches":true,"show_only_matches_children":true},"types":{"leaf":{"icon":"jstree-file"}},"plugins":["state","type","search"],"state":{"key":"2b4e8129b02d487f-1-navigation-panel"}}));
 // Tokens: searchInputSelector, timer, treeSelector
 $('#2b4e8129b02d487f-1-navigation-panel_searchInput').keyup(function () {
-    if (window['nsd_jstTreeSearchTimer_nsd_14']) { 
-		clearTimeout(window['nsd_jstTreeSearchTimer_nsd_14']); 
+    if (window['nsd_jstTreeSearchTimer_nsd_1o']) { 
+		clearTimeout(window['nsd_jstTreeSearchTimer_nsd_1o']); 
 	}
-    window['nsd_jstTreeSearchTimer_nsd_14'] = setTimeout(function () {
+    window['nsd_jstTreeSearchTimer_nsd_1o'] = setTimeout(function () {
       var v = $('#2b4e8129b02d487f-1-navigation-panel_searchInput').val();
       $('#2b4e8129b02d487f-1-navigation-panel').jstree(true).search(v);
     }, 250);
@@ -110,12 +73,12 @@ $('#2b4e8129b02d487f-1-navigation-panel_searchInput').keyup(function () {
 
 });</script>
         </div>
-        <div data-nsd-action-uuid="1fa186d6-309e-4f98-ba67-3d813fdeb38d" class="col nsd-app-content-panel">
+        <div data-nsd-label-uuid="92591250-51ec-4b6c-8a4d-acadcab78803" class="col nsd-app-content-panel">
           <div class="container-fluid">
             <div class="row nsd-app-content-panel-title-and-items-row">
               <div class="col-auto">
-                <h1><span data-nsd-action-uuid="1fa186d6-309e-4f98-ba67-3d813fdeb38d" class="nsd-app-content-panel-title"><span class="fas fa-search nsd-app-label-icon"></span>Search</span>
-                </h1>
+                <H1><span data-nsd-label-uuid="92591250-51ec-4b6c-8a4d-acadcab78803" class="nsd-app-content-panel-title"><span class="fas fa-search nsd-app-label-icon"></span>Search</span>
+                </H1>
               </div>
             </div>
             <div class="row nsd-app-content-panel-content-row">
@@ -128,9 +91,22 @@ $('#2b4e8129b02d487f-1-navigation-panel_searchInput').keyup(function () {
      	<div id="search-app" class="container-fluid">
      		<div class="row">
      			<div class="col">
-					<b-form-group label="Filter" label-for="filter-input" label-cols-sm="3" label-align-sm="right" label-size="sm" class="mb-0" description="You can use wildcards, e.g. 'foo*' or 'f*o'; title or content fields, e.g. 'title:foo* bar'; boosts, e.g. 'foo^10 bar'; fuzzy matches, e.g. 'foo~1'; and term presence, e.g. '+foo bar -baz'">
+					<b-form-group
+			          label="Filter"
+			          label-for="filter-input"
+			          label-cols-sm="3"
+			          label-align-sm="right"
+			          label-size="sm"
+			          class="mb-0"
+					  description="You can use wildcards, e.g. 'foo*' or 'f*o'; title or content fields, e.g. 'title:foo* bar'; boosts, e.g. 'foo^10 bar'; fuzzy matches, e.g. 'foo~1'; and term presence, e.g. '+foo bar -baz'"	          
+			        >
 			          <b-input-group size="sm">
-			            <b-form-input id="filter-input" v-model="filter" type="search" placeholder="Type to Search"></b-form-input>
+			            <b-form-input
+			              id="filter-input"
+			              v-model="filter"
+			              type="search"
+			              placeholder="Type to Search"
+			            ></b-form-input>
 			
 			            <b-input-group-append>
 			              <b-button :disabled="!filter" @click="filter = ''">Clear</b-button>
@@ -146,7 +122,12 @@ $('#2b4e8129b02d487f-1-navigation-panel_searchInput').keyup(function () {
 	        		</div>
 	        	</div>
 	        	<div class="col">
-			        <b-card v-for="searchResult in searchResults" :header-html="searchResult.title" :footer="searchResult.path" class="my-1">
+			        <b-card 
+			        	v-for="searchResult in searchResults" 
+			        	:header-html="searchResult.title" 
+			        	:footer="searchResult.path"
+			        	class="my-1"
+			        	>
 			        	
 			        	<b-card-text><span v-html="searchResult.content"></span></b-card-text>
 			        </b-card>
@@ -299,7 +280,7 @@ $('#2b4e8129b02d487f-1-navigation-panel_searchInput').keyup(function () {
 		
 
 <script>$(document).ready( function() {
-$('#nsd-site-map-tree').jstree(function(tree) { tree.state.filter = function(state) { delete state.core.selected; return state; }; tree.search.search_callback = (results, node) => results.split(' ').includes(node.original['data-nsd-action-uuid']); return tree; }({"core":{"data":[{"a_attr":{"onclick":"window.location='index.html';"},"children":[{"children":[{"a_attr":{"onclick":"window.location='children/2b4e8129b02d487f-2/index.html';"},"children":[{"children":[{"a_attr":{"onclick":"window.location='children/2b4e8129b02d487f-2/children/2b4e8129b02d487f-6/index.html';"},"children":[{"children":[{"a_attr":{"onclick":"window.location='children/2b4e8129b02d487f-2/children/2b4e8129b02d487f-6/anonymous/2b4e8129b02d487f-24/index.html';"},"id":"f5dcfe89-4297-460c-a318-194325620177","text":"Activity 1 -> Activity 2","data-nsd-action-uuid":"09b07e52-1a25-498a-b460-92f901d4b223","type":"leaf"}],"text":"Anonymous"}],"id":"be050ddd-0940-49f3-aec4-0bf203e8f4e5","text":"Activity 1","data-nsd-action-uuid":"f4e8c44b-b9b8-40ac-9553-e23c90e3e92b","type":"leaf"},{"a_attr":{"onclick":"window.location='children/2b4e8129b02d487f-2/children/2b4e8129b02d487f-7/index.html';"},"children":[{"children":[{"a_attr":{"onclick":"window.location='children/2b4e8129b02d487f-2/children/2b4e8129b02d487f-7/children/nyDErOf45Nq0Kb2UPtJH-1/index.html';"},"id":"7859fd2c-4db7-4616-8538-c055acb50318","text":"Step 3.1","data-nsd-action-uuid":"9f8b3cea-9e6f-412f-b0ae-806db7db911b","type":"leaf"},{"a_attr":{"onclick":"window.location='children/2b4e8129b02d487f-2/children/2b4e8129b02d487f-7/children/nyDErOf45Nq0Kb2UPtJH-3/index.html';"},"id":"4e8481da-ecb4-43db-9cb2-0c9bb5719c07","text":"Step 3.2","data-nsd-action-uuid":"9af74a1b-fe13-484b-b0ce-46f3aa3002e3","type":"leaf"},{"a_attr":{"onclick":"window.location='children/2b4e8129b02d487f-2/children/2b4e8129b02d487f-7/children/nyDErOf45Nq0Kb2UPtJH-2/index.html';"},"id":"df020d52-130b-4700-bc49-b1c7f8e901e1","text":"Step 3.3","data-nsd-action-uuid":"65392d1e-37b4-4505-b12a-07983c8021c3","type":"leaf"}],"text":"Children"}],"id":"b1950b0b-0231-4012-8f15-14142c011ce9","text":"Activity 3","data-nsd-action-uuid":"caf3d223-ded5-400d-bae0-f9b5950a1c75","type":"leaf"},{"a_attr":{"onclick":"window.location='children/2b4e8129b02d487f-2/children/2b4e8129b02d487f-9/index.html';"},"id":"102fa824-6187-41ee-b850-ff9b82fc6993","text":"Activity 6","data-nsd-action-uuid":"85812978-5f10-4fcd-a33e-a9b702a7cb93","type":"leaf"},{"a_attr":{"onclick":"window.location='children/2b4e8129b02d487f-2/children/2b4e8129b02d487f-11/index.html';"},"id":"2e6956e4-c641-491f-8c83-99b7b44d2aaf","text":"End","data-nsd-action-uuid":"10cc9b21-1b51-440a-8645-41584214edba","type":"leaf"},{"a_attr":{"onclick":"window.location='children/2b4e8129b02d487f-2/children/2b4e8129b02d487f-10/index.html';"},"id":"7229b734-fcc1-48eb-bfcc-022a14232648","text":"Merge","data-nsd-action-uuid":"377c77a3-5a02-47d0-8d25-7896fd4e95a5","type":"leaf"},{"a_attr":{"onclick":"window.location='children/2b4e8129b02d487f-2/children/2b4e8129b02d487f-5/index.html';"},"id":"7b2a2492-dce2-4997-b74e-f63b7bf01fa8","text":"Start","data-nsd-action-uuid":"d9458e21-6fa5-4bbd-929b-ec71a34624a5","type":"leaf"}],"text":"Children"}],"id":"77cb3102-fb66-41bd-b5f6-908322ef3d20","text":"Team 1","data-nsd-action-uuid":"c6eeabbb-b98c-43ac-9dd5-5e2345e94bab","type":"leaf"},{"a_attr":{"onclick":"window.location='children/2b4e8129b02d487f-3/index.html';"},"children":[{"children":[{"a_attr":{"onclick":"window.location='children/2b4e8129b02d487f-3/children/2b4e8129b02d487f-12/index.html';"},"id":"3c20e66d-750e-4927-962c-de2c0a55fa53","text":"Activity 2","data-nsd-action-uuid":"250d4244-bc1a-4dfa-a22a-859a1ed9f672","type":"leaf"},{"a_attr":{"onclick":"window.location='children/2b4e8129b02d487f-3/children/2b4e8129b02d487f-13/index.html';"},"id":"5dcefbfe-1795-4e4c-881b-7cd556a0c3f3","text":"Decision A","data-nsd-action-uuid":"2c9dc7c7-11ab-4736-9bf0-76f2933c06c4","type":"leaf"}],"text":"Children"}],"id":"114a70cd-5dda-4559-8281-4e0036370ce3","text":"Team 2","data-nsd-action-uuid":"5828fca9-2458-4498-98d3-d0492b37fb41","type":"leaf"},{"a_attr":{"onclick":"window.location='children/2b4e8129b02d487f-4/index.html';"},"children":[{"children":[{"a_attr":{"onclick":"window.location='children/2b4e8129b02d487f-4/children/2b4e8129b02d487f-14/index.html';"},"id":"0940ae98-ea84-4dc1-b635-00662c4c93ad","text":"Activity 4","data-nsd-action-uuid":"27dc2d2f-6d45-4d5b-822c-042913b687c9","type":"leaf"},{"a_attr":{"onclick":"window.location='children/2b4e8129b02d487f-4/children/2b4e8129b02d487f-17/index.html';"},"id":"13cd0512-ae54-41a9-b4e3-1e4d076fc419","text":"Activity 7","data-nsd-action-uuid":"65b48266-2a50-4d87-95d0-20866bb30df1","type":"leaf"},{"a_attr":{"onclick":"window.location='children/2b4e8129b02d487f-4/children/2b4e8129b02d487f-15/index.html';"},"id":"7ed092fd-c006-4597-a56d-256071cedf54","text":"Decision B","data-nsd-action-uuid":"dd77230d-eb1a-4c4f-be41-947f3aa2049c","type":"leaf"},{"a_attr":{"onclick":"window.location='children/2b4e8129b02d487f-4/children/2b4e8129b02d487f-16/index.html';"},"id":"e8479259-1b86-4457-88be-333f7d095986","text":"Split","data-nsd-action-uuid":"d16ff51e-ddb9-41e4-a430-a824cbaf3be5","type":"leaf"}],"text":"Children"}],"id":"671e7f4b-a646-4979-8261-cec108b55cfe","text":"Team 3","data-nsd-action-uuid":"fd6cfa0d-fdcf-43d5-9eea-32d1ac63d829","type":"leaf"}],"text":"Children"}],"id":"4cf2b3e1-8a21-4e75-bbb3-6866682e7719","text":"Process A","data-nsd-action-uuid":"bf5e22f0-f769-4dc3-bb79-88bddac7de48","type":"leaf"}]},"search":{"show_only_matches":true},"plugins":["state","search"],"state":{"key":"nsd-site-map-tree"}}));
+$('#nsd-site-map-tree').jstree(function(tree) { tree.state.filter = function(state) { delete state.core.selected; return state; }; tree.search.search_callback = (results, node) => results.split(' ').includes(node.original['data-nsd-label-uuid']); return tree; }({"core":{"data":[{"a_attr":{"onclick":"window.location='index.html';"},"children":[{"children":[{"a_attr":{"onclick":"window.location='children/2b4e8129b02d487f-2/index.html';"},"children":[{"children":[{"a_attr":{"onclick":"window.location='children/2b4e8129b02d487f-2/children/2b4e8129b02d487f-6/index.html';"},"children":[{"children":[{"a_attr":{"onclick":"window.location='children/2b4e8129b02d487f-2/children/2b4e8129b02d487f-6/anonymous/2b4e8129b02d487f-24/index.html';"},"data-nsd-label-uuid":"71664802-f95e-4459-ac71-8597633f6a6c","id":"5a8d9e13-bebe-4973-a2c1-a1099dcf30d5","text":"Activity 1 -> Activity 2","type":"leaf"}],"text":"Anonymous"}],"data-nsd-label-uuid":"15121fd6-3e8b-4d42-95a2-f9ee86b4f7b5","id":"f8b0891a-1955-4641-a409-84a56a333061","text":"Activity 1","type":"leaf"},{"a_attr":{"onclick":"window.location='children/2b4e8129b02d487f-2/children/2b4e8129b02d487f-7/index.html';"},"children":[{"children":[{"a_attr":{"onclick":"window.location='children/2b4e8129b02d487f-2/children/2b4e8129b02d487f-7/children/nyDErOf45Nq0Kb2UPtJH-1/index.html';"},"data-nsd-label-uuid":"d7a35842-5fed-4fbf-ae75-514f5dcf45cd","id":"4bbed28a-6dac-4243-8467-7a52518d5833","text":"Step 3.1","type":"leaf"},{"a_attr":{"onclick":"window.location='children/2b4e8129b02d487f-2/children/2b4e8129b02d487f-7/children/nyDErOf45Nq0Kb2UPtJH-3/index.html';"},"data-nsd-label-uuid":"40fb40e4-6d0a-4618-afc7-df0d9247b131","id":"08d88534-320d-44f4-9ba7-f11eda2c7ec1","text":"Step 3.2","type":"leaf"},{"a_attr":{"onclick":"window.location='children/2b4e8129b02d487f-2/children/2b4e8129b02d487f-7/children/nyDErOf45Nq0Kb2UPtJH-2/index.html';"},"data-nsd-label-uuid":"72409dfc-e23a-47f4-b8d7-edffa19e0e3e","id":"6da79508-ee00-4235-adb4-2b678db17f37","text":"Step 3.3","type":"leaf"}],"text":"Children"}],"data-nsd-label-uuid":"9bf333f3-1967-4c4b-8c9a-8ad653c347e6","id":"c9731616-2394-4b82-9697-0d9041cd9372","text":"Activity 3","type":"leaf"},{"a_attr":{"onclick":"window.location='children/2b4e8129b02d487f-2/children/2b4e8129b02d487f-9/index.html';"},"data-nsd-label-uuid":"8fdc40ce-cd4c-4a81-afe5-94a0e904f8dc","id":"2dbe819e-41f3-43ce-b2a4-3771f9a2d2dc","text":"Activity 6","type":"leaf"},{"a_attr":{"onclick":"window.location='children/2b4e8129b02d487f-2/children/2b4e8129b02d487f-11/index.html';"},"data-nsd-label-uuid":"aa3a6f2b-ae40-4c8e-945e-bf94b4685555","id":"6c76d122-1407-42dd-b67a-42d9363e09da","text":"End","type":"leaf"},{"a_attr":{"onclick":"window.location='children/2b4e8129b02d487f-2/children/2b4e8129b02d487f-10/index.html';"},"data-nsd-label-uuid":"45c245c0-a9dc-4838-a9d5-3ea1827afadf","id":"e6e0fe44-cbc3-4492-9940-cf827716a204","text":"Merge","type":"leaf"},{"a_attr":{"onclick":"window.location='children/2b4e8129b02d487f-2/children/2b4e8129b02d487f-5/index.html';"},"data-nsd-label-uuid":"3fa7b7fc-318a-40ad-8205-7fa2e64950e7","id":"e1dcbdce-1424-4f69-8230-e517865795b9","text":"Start","type":"leaf"}],"text":"Children"}],"data-nsd-label-uuid":"53c5224b-df26-4e01-82a2-557f5c952bd9","id":"5c636ef9-2b69-4334-9df1-90c90eb0960e","text":"Team 1","type":"leaf"},{"a_attr":{"onclick":"window.location='children/2b4e8129b02d487f-3/index.html';"},"children":[{"children":[{"a_attr":{"onclick":"window.location='children/2b4e8129b02d487f-3/children/2b4e8129b02d487f-12/index.html';"},"data-nsd-label-uuid":"0ea82b9d-8e11-4847-a3bb-c518d664b10f","id":"197766e1-12d0-4c34-b2a3-0013e8c0848c","text":"Activity 2","type":"leaf"},{"a_attr":{"onclick":"window.location='children/2b4e8129b02d487f-3/children/2b4e8129b02d487f-13/index.html';"},"data-nsd-label-uuid":"1d85395f-836c-46fa-90cc-124ad9e6327f","id":"66094df7-7bff-4cd8-876c-a19e3cdf160a","text":"Decision A","type":"leaf"}],"text":"Children"}],"data-nsd-label-uuid":"d8446955-c57f-42b0-84ae-f939bf9ca8db","id":"39ba8c85-11ae-41f7-9b20-0a29d81f3ac8","text":"Team 2","type":"leaf"},{"a_attr":{"onclick":"window.location='children/2b4e8129b02d487f-4/index.html';"},"children":[{"children":[{"a_attr":{"onclick":"window.location='children/2b4e8129b02d487f-4/children/2b4e8129b02d487f-14/index.html';"},"data-nsd-label-uuid":"7f848353-357f-427c-8a42-c684593a7986","id":"80807202-ac77-4201-bd7d-0bf3d63f9a10","text":"Activity 4","type":"leaf"},{"a_attr":{"onclick":"window.location='children/2b4e8129b02d487f-4/children/2b4e8129b02d487f-17/index.html';"},"data-nsd-label-uuid":"791a6ec4-bafc-4c46-86fc-6e465bcadfcc","id":"9a045e9c-7be8-4e71-bfd2-5f175a0346f4","text":"Activity 7","type":"leaf"},{"a_attr":{"onclick":"window.location='children/2b4e8129b02d487f-4/children/2b4e8129b02d487f-15/index.html';"},"data-nsd-label-uuid":"95c36d4c-3d5a-45bf-80bc-a74fc4ac72cb","id":"138e2d27-97ca-4b9b-8a7a-a13de40087ba","text":"Decision B","type":"leaf"},{"a_attr":{"onclick":"window.location='children/2b4e8129b02d487f-4/children/2b4e8129b02d487f-16/index.html';"},"data-nsd-label-uuid":"7aa22ea6-9e0a-4781-88cb-d18fc24fa103","id":"1b1eca2d-4fec-43ca-bc43-5ae08750ae76","text":"Split","type":"leaf"}],"text":"Children"}],"data-nsd-label-uuid":"2749ff36-4f5d-4770-96dc-0d7e449964b1","id":"645ea8a0-1c26-4883-b234-0b41f12630b5","text":"Team 3","type":"leaf"}],"text":"Children"}],"data-nsd-label-uuid":"65e620ab-95f2-4c95-a4b2-caf260fff060","id":"03d8e5d4-d24d-455c-8066-3d4f3d7201dd","text":"Process A","type":"leaf"}]},"search":{"show_only_matches":true},"plugins":["state","search"],"state":{"key":"nsd-site-map-tree"}}));
 });</script>
 				
 		</div>
@@ -314,12 +295,12 @@ $('#nsd-site-map-tree').jstree(function(tree) { tree.state.filter = function(sta
         <div class="col nsd-app-footer">
           <ul class="nav nsd-app-footer-navs">
             <li class="nav-item">
-              <a href="https://github.com/Nasdanika/demo-drawio-flow-actions" data-nsd-action-uuid="83fbda0f-bc52-42cf-8c29-e15caec20ad6" class="nav-link"><span class="fab fa-github nsd-app-label-icon"></span>Source</a>
+              <a href="https://github.com/Nasdanika/demo-drawio-flow-actions" data-nsd-label-uuid="c848cb8e-9071-4006-a232-06d7d9aa19e3" class="nav-link"><span class="fab fa-github nsd-app-label-icon"></span>Source</a>
             </li>
-            <li class="nav-item"><span class="navbar-text">&nbsp;•&nbsp;</span>
+            <li class="nav-item"><span class="navbar-text">&nbsp;&bull;&nbsp;</span>
             </li>
             <li class="nav-item">
-              <a href="https://docs.nasdanika.org/modules/demos/modules/app-drawio/modules/flow-actions/index.html" data-nsd-action-uuid="c9abd852-3c91-4fdd-8184-9019af132c65" class="nav-link"><span class="fas fa-book nsd-app-label-icon"></span>Documentation</a>
+              <a href="https://docs.nasdanika.org/modules/demos/modules/app-drawio/modules/flow-actions/index.html" data-nsd-label-uuid="8662a286-ac35-4a98-85fd-9f5d885234ac" class="nav-link"><span class="fas fa-book nsd-app-label-icon"></span>Documentation</a>
             </li>
           </ul>
         </div>
